@@ -21,6 +21,11 @@
 \usepackage{etoolbox}
 \AtBeginEnvironment{xltabular}{\refstepcounter{tablecnt}} % подсчет таблиц xltabular, обычные таблицы подсчитываются в классе
 
+\usepackage{seqsplit} % перенос длинных идентификаторов в ячейках таблиц
+\newcommand{\dbfield}[1]{\seqsplit{#1}} % имя поля БД с возможностью переноса
+\newcommand{\dbtype}[1]{\seqsplit{#1}}  % тип поля БД с возможностью переноса
+\newcommand{\route}[1]{\texttt{\seqsplit{#1}}} % URL-маршрут моноширинным шрифтом с переносом
+
 \usepackage[tableposition=top]{caption} % подпись таблицы вверху
 \captionsetup{strut=off}
 \setlength{\intextsep}{0pt} % Vertical space above & below [h] floats

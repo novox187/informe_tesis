@@ -1,135 +1,167 @@
 # Рисунок 3.4 — ER-модель основных сущностей системы
+# Используем rectangle с markdown-текстом для полного контроля над цветами
+
 direction: right
 
-Client: "Абонент (Client)" {
-  shape: sql_table
+Client: |md
+  ### Абонент (Client)
+  ---
+  - id : BIGINT (PK)
+  - full_name : VARCHAR
+  - document_id : VARCHAR
+  - email : VARCHAR
+  - service_status : ENUM
+  - ip : VARCHAR
+  - contract_date : DATE
+| {
   style.fill: "#e3f2fd"
   style.stroke: "#1976d2"
-
-  id: BIGINT {constraint: primary_key}
-  full_name: VARCHAR
-  document_id: VARCHAR
-  email: VARCHAR
-  service_status: ENUM
-  ip: VARCHAR
-  contract_date: DATE
+  style.stroke-width: 2
+  style.border-radius: 4
 }
 
-Plan: "Тарифный план (Plan)" {
-  shape: sql_table
+Plan: |md
+  ### Тарифный план (Plan)
+  ---
+  - id : BIGINT (PK)
+  - name : VARCHAR
+  - download_speed : INT
+  - upload_speed : INT
+  - monthly_price : DECIMAL
+  - is_active : BOOL
+| {
   style.fill: "#e8f5e9"
   style.stroke: "#388e3c"
-
-  id: BIGINT {constraint: primary_key}
-  name: VARCHAR
-  download_speed: INT
-  upload_speed: INT
-  monthly_price: DECIMAL
-  is_active: BOOL
+  style.stroke-width: 2
+  style.border-radius: 4
 }
 
-ClientPlan: "Подписка (ClientPlan)" {
-  shape: sql_table
+ClientPlan: |md
+  ### Подписка (ClientPlan)
+  ---
+  - id : BIGINT (PK)
+  - client_id : BIGINT (FK)
+  - plan_id : BIGINT (FK)
+  - start_date : DATE
+  - current_price : DECIMAL
+  - ip_address : VARCHAR
+  - status : VARCHAR
+| {
   style.fill: "#e8f5e9"
   style.stroke: "#388e3c"
-
-  id: BIGINT {constraint: primary_key}
-  client_id: BIGINT {constraint: foreign_key}
-  plan_id: BIGINT {constraint: foreign_key}
-  start_date: DATE
-  current_price: DECIMAL
-  ip_address: VARCHAR
-  status: VARCHAR
+  style.stroke-width: 2
+  style.border-radius: 4
 }
 
-PlanFeature: "Особенность тарифа (PlanFeature)" {
-  shape: sql_table
+PlanFeature: |md
+  ### Особенность тарифа (PlanFeature)
+  ---
+  - id : BIGINT (PK)
+  - plan_id : BIGINT (FK)
+  - feature : VARCHAR
+| {
   style.fill: "#e8f5e9"
   style.stroke: "#388e3c"
-
-  id: BIGINT {constraint: primary_key}
-  plan_id: BIGINT {constraint: foreign_key}
-  feature: VARCHAR
+  style.stroke-width: 2
+  style.border-radius: 4
 }
 
-Wallet: "Лицевой счет (Wallet)" {
-  shape: sql_table
-  style.fill: "#fff3e0"
+Wallet: |md
+  ### Лицевой счет (Wallet)
+  ---
+  - id : BIGINT (PK)
+  - client_id : BIGINT (FK)
+  - balance : DECIMAL
+  - currency : VARCHAR
+| {
+  style.fill: "#fff8e1"
   style.stroke: "#f57c00"
-
-  id: BIGINT {constraint: primary_key}
-  client_id: BIGINT {constraint: foreign_key}
-  balance: DECIMAL
-  currency: VARCHAR
+  style.stroke-width: 2
+  style.border-radius: 4
 }
 
-Transaction: "Транзакция (Transaction)" {
-  shape: sql_table
-  style.fill: "#fff3e0"
+Transaction: |md
+  ### Транзакция (Transaction)
+  ---
+  - id : BIGINT (PK)
+  - wallet_id : BIGINT (FK)
+  - type : VARCHAR
+  - amount : DECIMAL
+  - status : VARCHAR
+| {
+  style.fill: "#fff8e1"
   style.stroke: "#f57c00"
-
-  id: BIGINT {constraint: primary_key}
-  wallet_id: BIGINT {constraint: foreign_key}
-  type: VARCHAR
-  amount: DECIMAL
-  status: VARCHAR
+  style.stroke-width: 2
+  style.border-radius: 4
 }
 
-Invoice: "Счет (Invoice)" {
-  shape: sql_table
-  style.fill: "#fff3e0"
+Invoice: |md
+  ### Счет (Invoice)
+  ---
+  - id : BIGINT (PK)
+  - client_id : BIGINT (FK)
+  - client_plan_id : BIGINT (FK)
+  - invoice_number : VARCHAR
+  - total_amount : DECIMAL
+  - status : VARCHAR
+| {
+  style.fill: "#fff8e1"
   style.stroke: "#f57c00"
-
-  id: BIGINT {constraint: primary_key}
-  client_id: BIGINT {constraint: foreign_key}
-  client_plan_id: BIGINT {constraint: foreign_key}
-  invoice_number: VARCHAR
-  total_amount: DECIMAL
-  status: VARCHAR
+  style.stroke-width: 2
+  style.border-radius: 4
 }
 
-Ticket: "Обращение (Ticket)" {
-  shape: sql_table
+Ticket: |md
+  ### Обращение (Ticket)
+  ---
+  - id : BIGINT (PK)
+  - client_id : BIGINT (FK)
+  - employee_id : BIGINT (FK)
+  - subject : VARCHAR
+  - status : VARCHAR
+  - rating : TINYINT
+| {
   style.fill: "#f3e5f5"
   style.stroke: "#7b1fa2"
-
-  id: BIGINT {constraint: primary_key}
-  client_id: BIGINT {constraint: foreign_key}
-  employee_id: BIGINT {constraint: foreign_key}
-  subject: VARCHAR
-  status: VARCHAR
-  rating: TINYINT
+  style.stroke-width: 2
+  style.border-radius: 4
 }
 
-Message: "Сообщение (Message)" {
-  shape: sql_table
+Message: |md
+  ### Сообщение (Message)
+  ---
+  - id : BIGINT (PK)
+  - ticket_id : BIGINT (FK)
+  - message : TEXT
+  - read_at : DATETIME
+| {
   style.fill: "#f3e5f5"
   style.stroke: "#7b1fa2"
-
-  id: BIGINT {constraint: primary_key}
-  ticket_id: BIGINT {constraint: foreign_key}
-  message: TEXT
-  read_at: DATETIME
+  style.stroke-width: 2
+  style.border-radius: 4
 }
 
-ClientEvent: "Событие абонента (ClientEvent)" {
-  shape: sql_table
+ClientEvent: |md
+  ### Событие абонента (ClientEvent)
+  ---
+  - id : BIGINT (PK)
+  - client_id : BIGINT (FK)
+  - event_type : VARCHAR
+| {
   style.fill: "#f3e5f5"
   style.stroke: "#7b1fa2"
-
-  id: BIGINT {constraint: primary_key}
-  client_id: BIGINT {constraint: foreign_key}
-  event_type: VARCHAR
+  style.stroke-width: 2
+  style.border-radius: 4
 }
 
 # Связи 1:N и 1:1
-Client.id -> ClientPlan.client_id: "1:N"
-Plan.id -> ClientPlan.plan_id: "1:N"
-Plan.id -> PlanFeature.plan_id: "1:N"
-Client.id -> Wallet.client_id: "1:1"
-Wallet.id -> Transaction.wallet_id: "1:N"
-Client.id -> Invoice.client_id: "1:N"
-ClientPlan.id -> Invoice.client_plan_id: "1:N"
-Client.id -> Ticket.client_id: "1:N"
-Ticket.id -> Message.ticket_id: "1:N"
-Client.id -> ClientEvent.client_id: "1:N"
+Client -> ClientPlan: "1:N"
+Plan -> ClientPlan: "1:N"
+Plan -> PlanFeature: "1:N"
+Client -> Wallet: "1:1"
+Wallet -> Transaction: "1:N"
+Client -> Invoice: "1:N"
+ClientPlan -> Invoice: "1:N"
+Client -> Ticket: "1:N"
+Ticket -> Message: "1:N"
+Client -> ClientEvent: "1:N"

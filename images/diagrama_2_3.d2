@@ -1,104 +1,107 @@
 # Рисунок 2.3 — Укрупненная диаграмма прецедентов сотрудников
-direction: right
+# Layout 2x2: четыре квадранта, каждый с актором и его прецедентами
 
-operator: "Оператор\nабонентского отдела" {
-  shape: person
-  style.fill: "#c8e6c9"
-  style.stroke: "#388e3c"
-  style.stroke-width: 2
-}
-
-finance: "Финансовый\nадминистратор" {
-  shape: person
-  style.fill: "#c8e6c9"
-  style.stroke: "#388e3c"
-  style.stroke-width: 2
-}
-
-network: "Сетевой\nадминистратор" {
-  shape: person
-  style.fill: "#c8e6c9"
-  style.stroke: "#388e3c"
-  style.stroke-width: 2
-}
-
-superadmin: "Суперадмини-\nстратор" {
-  shape: person
-  style.fill: "#fff9c4"
-  style.stroke: "#f9a825"
-  style.stroke-width: 3
-}
-
-system: "Панель администрирования" {
-  style: {
-    fill: "#fafafa"
-    stroke: "#666"
-    stroke-width: 2
-    border-radius: 12
+classes: {
+  actor: {
+    shape: rectangle
+    width: 220
+    height: 70
+    style: {
+      fill: "#c8e6c9"
+      stroke: "#388e3c"
+      stroke-width: 2
+      border-radius: 6
+      font-size: 14
+      bold: true
+    }
   }
-
-  cli: "Управлять\nабонентами" {
-    shape: oval
-    style.fill: "#fff3e0"
+  superactor: {
+    shape: rectangle
+    width: 220
+    height: 70
+    style: {
+      fill: "#fff9c4"
+      stroke: "#f9a825"
+      stroke-width: 3
+      border-radius: 6
+      font-size: 14
+      bold: true
+    }
   }
-  sus: "Изменять статус\nабонента" {
+  uc: {
     shape: oval
+    width: 200
+    height: 75
     style.fill: "#fff3e0"
-  }
-  sup: "Обрабатывать\nобращения" {
-    shape: oval
-    style.fill: "#fff3e0"
-  }
-  pl: "Управлять\nтарифами" {
-    shape: oval
-    style.fill: "#fff3e0"
-  }
-  inv: "Управлять\nсчетами" {
-    shape: oval
-    style.fill: "#fff3e0"
-  }
-  wal: "Пополнять\nлицевой счет" {
-    shape: oval
-    style.fill: "#fff3e0"
-  }
-  rt: "Просматривать\nмаршрутизаторы" {
-    shape: oval
-    style.fill: "#fff3e0"
-  }
-  fw: "Управлять\nбрандмауэром" {
-    shape: oval
-    style.fill: "#fff3e0"
-  }
-  sy: "Синхронизировать\nочереди" {
-    shape: oval
-    style.fill: "#fff3e0"
-  }
-  us: "Управлять\nсотрудниками" {
-    shape: oval
-    style.fill: "#fff3e0"
-  }
-  ro: "Управлять\nролями" {
-    shape: oval
-    style.fill: "#fff3e0"
-  }
-  rt2: "Управлять\nмаршрутизаторами" {
-    shape: oval
-    style.fill: "#fff3e0"
+    style.stroke: "#f57c00"
+    style.font-size: 13
   }
 }
 
-operator -> system.cli
-operator -> system.sus
-operator -> system.sup
+# Основной контейнер с сеткой 2 столбца x 2 строки
+main: "" {
+  grid-columns: 2
+  grid-gap: 60
+  style.fill: transparent
+  style.stroke: transparent
 
-finance -> system.pl
-finance -> system.inv
-finance -> system.wal
+  # Квадрант 1: Оператор
+  operator_zone: "" {
+    style.fill: transparent
+    style.stroke: transparent
 
-network -> system.rt
-network -> system.fw
-network -> system.sy
+    operator: "Оператор\nабонентского отдела" {class: actor}
+    cli: "Управлять\nабонентами" {class: uc}
+    sus: "Изменять статус\nабонента" {class: uc}
+    sup: "Обрабатывать\nобращения" {class: uc}
 
-superadmin -> system.us
-superadmin -> system.ro
-superadmin -> system.rt2
+    operator -> cli
+    operator -> sus
+    operator -> sup
+  }
+
+  # Квадрант 2: Финансовый
+  finance_zone: "" {
+    style.fill: transparent
+    style.stroke: transparent
+
+    finance: "Финансовый\nадминистратор" {class: actor}
+    pl: "Управлять\nтарифами" {class: uc}
+    inv: "Управлять\nсчетами" {class: uc}
+    wal: "Пополнять\nлицевой счет" {class: uc}
+
+    finance -> pl
+    finance -> inv
+    finance -> wal
+  }
+
+  # Квадрант 3: Сетевой
+  network_zone: "" {
+    style.fill: transparent
+    style.stroke: transparent
+
+    network: "Сетевой\nадминистратор" {class: actor}
+    rt: "Просматривать\nмаршрутизаторы" {class: uc}
+    fw: "Управлять\nбрандмауэром" {class: uc}
+    sy: "Синхронизировать\nочереди" {class: uc}
+
+    network -> rt
+    network -> fw
+    network -> sy
+  }
+
+  # Квадрант 4: Суперадминистратор
+  super_zone: "" {
+    style.fill: transparent
+    style.stroke: transparent
+
+    superadmin: "Суперадминистратор" {class: superactor}
+    us: "Управлять\nсотрудниками" {class: uc}
+    ro: "Управлять\nролями" {class: uc}
+    rt2: "Управлять\nмаршрутизаторами" {class: uc}
+
+    superadmin -> us
+    superadmin -> ro
+    superadmin -> rt2
+  }
+}
