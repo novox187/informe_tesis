@@ -1,0 +1,135 @@
+# Рисунок 3.4 — ER-модель основных сущностей системы
+direction: right
+
+Client: "Абонент (Client)" {
+  shape: sql_table
+  style.fill: "#e3f2fd"
+  style.stroke: "#1976d2"
+
+  id: BIGINT {constraint: primary_key}
+  full_name: VARCHAR
+  document_id: VARCHAR
+  email: VARCHAR
+  service_status: ENUM
+  ip: VARCHAR
+  contract_date: DATE
+}
+
+Plan: "Тарифный план (Plan)" {
+  shape: sql_table
+  style.fill: "#e8f5e9"
+  style.stroke: "#388e3c"
+
+  id: BIGINT {constraint: primary_key}
+  name: VARCHAR
+  download_speed: INT
+  upload_speed: INT
+  monthly_price: DECIMAL
+  is_active: BOOL
+}
+
+ClientPlan: "Подписка (ClientPlan)" {
+  shape: sql_table
+  style.fill: "#e8f5e9"
+  style.stroke: "#388e3c"
+
+  id: BIGINT {constraint: primary_key}
+  client_id: BIGINT {constraint: foreign_key}
+  plan_id: BIGINT {constraint: foreign_key}
+  start_date: DATE
+  current_price: DECIMAL
+  ip_address: VARCHAR
+  status: VARCHAR
+}
+
+PlanFeature: "Особенность тарифа (PlanFeature)" {
+  shape: sql_table
+  style.fill: "#e8f5e9"
+  style.stroke: "#388e3c"
+
+  id: BIGINT {constraint: primary_key}
+  plan_id: BIGINT {constraint: foreign_key}
+  feature: VARCHAR
+}
+
+Wallet: "Лицевой счет (Wallet)" {
+  shape: sql_table
+  style.fill: "#fff3e0"
+  style.stroke: "#f57c00"
+
+  id: BIGINT {constraint: primary_key}
+  client_id: BIGINT {constraint: foreign_key}
+  balance: DECIMAL
+  currency: VARCHAR
+}
+
+Transaction: "Транзакция (Transaction)" {
+  shape: sql_table
+  style.fill: "#fff3e0"
+  style.stroke: "#f57c00"
+
+  id: BIGINT {constraint: primary_key}
+  wallet_id: BIGINT {constraint: foreign_key}
+  type: VARCHAR
+  amount: DECIMAL
+  status: VARCHAR
+}
+
+Invoice: "Счет (Invoice)" {
+  shape: sql_table
+  style.fill: "#fff3e0"
+  style.stroke: "#f57c00"
+
+  id: BIGINT {constraint: primary_key}
+  client_id: BIGINT {constraint: foreign_key}
+  client_plan_id: BIGINT {constraint: foreign_key}
+  invoice_number: VARCHAR
+  total_amount: DECIMAL
+  status: VARCHAR
+}
+
+Ticket: "Обращение (Ticket)" {
+  shape: sql_table
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+
+  id: BIGINT {constraint: primary_key}
+  client_id: BIGINT {constraint: foreign_key}
+  employee_id: BIGINT {constraint: foreign_key}
+  subject: VARCHAR
+  status: VARCHAR
+  rating: TINYINT
+}
+
+Message: "Сообщение (Message)" {
+  shape: sql_table
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+
+  id: BIGINT {constraint: primary_key}
+  ticket_id: BIGINT {constraint: foreign_key}
+  message: TEXT
+  read_at: DATETIME
+}
+
+ClientEvent: "Событие абонента (ClientEvent)" {
+  shape: sql_table
+  style.fill: "#f3e5f5"
+  style.stroke: "#7b1fa2"
+
+  id: BIGINT {constraint: primary_key}
+  client_id: BIGINT {constraint: foreign_key}
+  event_type: VARCHAR
+}
+
+# Связи 1:N и 1:1
+Client.id -> ClientPlan.client_id: "1:N"
+Plan.id -> ClientPlan.plan_id: "1:N"
+Plan.id -> PlanFeature.plan_id: "1:N"
+Client.id -> Wallet.client_id: "1:1"
+Wallet.id -> Transaction.wallet_id: "1:N"
+Client.id -> Invoice.client_id: "1:N"
+ClientPlan.id -> Invoice.client_plan_id: "1:N"
+Client.id -> Ticket.client_id: "1:N"
+Ticket.id -> Message.ticket_id: "1:N"
+Client.id -> ClientEvent.client_id: "1:N"

@@ -1,0 +1,43 @@
+# Рисунок 3.3 — Последовательность обработки запроса
+# (Приостановка обслуживания абонента)
+
+shape: sequence_diagram
+
+br: "Браузер" {
+  style.fill: "#e3f2fd"
+}
+sv: "Svelte" {
+  style.fill: "#e3f2fd"
+}
+api: "Laravel API" {
+  style.fill: "#e8f5e9"
+}
+db: "MySQL" {
+  style.fill: "#fff3e0"
+}
+wk: "Worker" {
+  style.fill: "#e8f5e9"
+}
+mt: "MikroTik" {
+  style.fill: "#f3e5f5"
+}
+
+br -> sv: "1. Клик 'Приостановить'"
+sv -> api: "2. POST /api/admin/clientes/{id}/suspend\n(Bearer токен)"
+
+api.auth: "3. Проверка auth:sanctum + permission" {
+  style.fill: "#fffde7"
+}
+
+api -> db: "4. SELECT * FROM clients WHERE id=?"
+db -> api: "Запись абонента"
+api -> db: "5. UPDATE clients SET service_status='suspended'"
+api -> db: "6. INSERT INTO client_events"
+api -> wk: "7. dispatch(SyncMikroTikQueues)"
+api -> sv: "8. 200 OK + обновленная запись"
+sv -> br: "9. Перерисовка карточки абонента"
+
+wk -> mt: "10. /queue/simple/remove [find name=...]"
+mt -> wk: "OK"
+wk -> mt: "11. /ip/firewall/address-list/add list=suspended"
+mt -> wk: "OK"

@@ -1,0 +1,128 @@
+# Рисунок 2.1 — Иерархия действующих лиц системы
+# Четыре роли сотрудников; абонент как актор не рассматривается
+# (личный кабинет абонента вынесен за рамки работы)
+
+direction: up
+
+employee: "Сотрудник\n(базовая роль)" {
+  shape: rectangle
+  width: 220
+  height: 70
+  style: {
+    fill: "#c8e6c9"
+    stroke: "#388e3c"
+    stroke-width: 2
+    border-radius: 6
+    font-size: 16
+    bold: true
+  }
+}
+
+operator: "Оператор\nабонентского отдела" {
+  shape: rectangle
+  width: 220
+  height: 70
+  style: {
+    fill: "#a5d6a7"
+    stroke: "#388e3c"
+    stroke-width: 2
+    border-radius: 6
+    font-size: 14
+  }
+}
+
+finance: "Финансовый\nадминистратор" {
+  shape: rectangle
+  width: 220
+  height: 70
+  style: {
+    fill: "#a5d6a7"
+    stroke: "#388e3c"
+    stroke-width: 2
+    border-radius: 6
+    font-size: 14
+  }
+}
+
+network: "Сетевой\nадминистратор" {
+  shape: rectangle
+  width: 220
+  height: 70
+  style: {
+    fill: "#a5d6a7"
+    stroke: "#388e3c"
+    stroke-width: 2
+    border-radius: 6
+    font-size: 14
+  }
+}
+
+superadmin: "Суперадминистратор" {
+  shape: rectangle
+  width: 240
+  height: 70
+  style: {
+    fill: "#fff9c4"
+    stroke: "#f9a825"
+    stroke-width: 3
+    border-radius: 6
+    font-size: 16
+    bold: true
+  }
+}
+
+# UML generalization arrows: child -> parent
+operator -> employee {
+  style.stroke-dash: 3
+  style.stroke: "#555"
+  style.stroke-width: 2
+  target-arrowhead: {
+    shape: triangle
+    style.filled: false
+  }
+}
+finance -> employee {
+  style.stroke-dash: 3
+  style.stroke: "#555"
+  style.stroke-width: 2
+  target-arrowhead: {
+    shape: triangle
+    style.filled: false
+  }
+}
+network -> employee {
+  style.stroke-dash: 3
+  style.stroke: "#555"
+  style.stroke-width: 2
+  target-arrowhead: {
+    shape: triangle
+    style.filled: false
+  }
+}
+superadmin -> operator {
+  style.stroke-dash: 3
+  style.stroke: "#555"
+  style.stroke-width: 2
+  target-arrowhead: {
+    shape: triangle
+    style.filled: false
+  }
+}
+superadmin -> finance {
+  style.stroke-dash: 3
+  style.stroke: "#555"
+  style.stroke-width: 2
+  target-arrowhead: {
+    shape: triangle
+    style.filled: false
+  }
+}
+superadmin -> network {
+  style.stroke-dash: 3
+  style.stroke: "#555"
+  style.stroke-width: 2
+  target-arrowhead: {
+    shape: triangle
+    style.filled: false
+  }
+}

@@ -1,0 +1,83 @@
+# Рисунок 3.2 — Уровневая схема архитектуры системы
+direction: down
+
+client_side: "Клиентская часть (браузер)" {
+  style: {
+    fill: "#e3f2fd"
+    stroke: "#1976d2"
+    stroke-width: 2
+    border-radius: 8
+  }
+
+  l1: "Уровень представления\nКомпоненты Svelte, страницы SvelteKit, маршрутизация" {
+    style.fill: "#bbdefb"
+    style.stroke: "#1976d2"
+    style.border-radius: 4
+  }
+
+  l2: "Уровень обмена\nfetch с Bearer-токеном, Laravel Echo / pusher-js" {
+    style.fill: "#90caf9"
+    style.stroke: "#1976d2"
+    style.border-radius: 4
+  }
+
+  l1 -> l2
+}
+
+boundary: "─ ─ ─ ─ ─ ─ ─ ─ ─ Граница клиент/сервер: HTTP/HTTPS, WebSocket ─ ─ ─ ─ ─ ─ ─ ─ ─" {
+  style: {
+    fill: transparent
+    stroke: transparent
+    italic: true
+    font-size: 12
+  }
+}
+
+server_side: "Серверная часть" {
+  style: {
+    fill: "#e8f5e9"
+    stroke: "#388e3c"
+    stroke-width: 2
+    border-radius: 8
+  }
+
+  l3: "Уровень программного интерфейса\nМаршруты, контроллеры, Form Requests, API Resources" {
+    style.fill: "#c8e6c9"
+    style.stroke: "#388e3c"
+    style.border-radius: 4
+  }
+
+  l4: "Уровень бизнес-логики\nСервисы (Services), задачи (Jobs), события (Events), проверки прав" {
+    style.fill: "#a5d6a7"
+    style.stroke: "#388e3c"
+    style.border-radius: 4
+  }
+
+  l5: "Уровень доступа к данным\nМодели Eloquent, миграции, ограничения целостности" {
+    style.fill: "#81c784"
+    style.stroke: "#388e3c"
+    style.border-radius: 4
+  }
+
+  l3 -> l4
+  l4 -> l5
+}
+
+data_side: "Хранилище данных" {
+  style: {
+    fill: "#fff3e0"
+    stroke: "#f57c00"
+    stroke-width: 2
+    border-radius: 8
+  }
+
+  l6: "Уровень хранения\nТаблицы MySQL, индексы, внешние ключи, журнал транзакций" {
+    style.fill: "#ffe0b2"
+    style.stroke: "#f57c00"
+    style.border-radius: 4
+  }
+}
+
+client_side -> boundary
+boundary -> server_side
+server_side.l5 -> data_side.l6

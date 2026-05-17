@@ -1,0 +1,109 @@
+# Рисунок 3.1 — Общая схема организации системы
+# Зоны: панель администрирования, серверная часть, данные, внешние сервисы
+# Личный кабинет абонента вынесен за рамки настоящей работы
+
+direction: right
+
+# === ЗОНА КЛИЕНТОВ (только сотрудники) ===
+clients: "Панель администрирования" {
+  style: {
+    fill: "#e3f2fd"
+    stroke: "#1976d2"
+    stroke-width: 2
+    border-radius: 8
+    font-size: 14
+  }
+
+  employee: "Браузер\nсотрудника" {
+    shape: person
+    style.fill: "#bbdefb"
+  }
+}
+
+# === ЗОНА СЕРВЕРНОЙ ЧАСТИ ===
+server: "Серверная часть" {
+  style: {
+    fill: "#e8f5e9"
+    stroke: "#388e3c"
+    stroke-width: 2
+    border-radius: 8
+    font-size: 14
+  }
+
+  nginx: "Nginx\n(reverse proxy)" {
+    shape: rectangle
+    style.fill: "#c8e6c9"
+    style.border-radius: 4
+  }
+
+  php: "PHP-FPM\nLaravel 12" {
+    shape: rectangle
+    style.fill: "#c8e6c9"
+    style.border-radius: 4
+  }
+
+  reverb: "Laravel Reverb\n(WebSocket)" {
+    shape: rectangle
+    style.fill: "#c8e6c9"
+    style.border-radius: 4
+  }
+
+  worker: "Worker\nqueue:work" {
+    shape: rectangle
+    style.fill: "#c8e6c9"
+    style.border-radius: 4
+  }
+
+  scheduler: "Scheduler\n(cron)" {
+    shape: rectangle
+    style.fill: "#c8e6c9"
+    style.border-radius: 4
+  }
+}
+
+# === ХРАНИЛИЩЕ ДАННЫХ ===
+data: "MySQL 8.0" {
+  shape: cylinder
+  style: {
+    fill: "#fff3e0"
+    stroke: "#f57c00"
+    stroke-width: 2
+    font-size: 14
+  }
+}
+
+# === ВНЕШНИЕ СЕРВИСЫ ===
+external: "Внешние сервисы" {
+  style: {
+    fill: "#f3e5f5"
+    stroke: "#7b1fa2"
+    stroke-width: 2
+    border-radius: 8
+    font-size: 14
+  }
+
+  mikrotik: "MikroTik\nRouterOS" {
+    shape: rectangle
+    style.fill: "#e1bee7"
+    style.border-radius: 4
+  }
+
+  cloudinary: "Cloudinary" {
+    shape: cloud
+    style.fill: "#e1bee7"
+  }
+}
+
+# === СОЕДИНЕНИЯ ===
+clients.employee -> server.nginx: HTTPS
+clients.employee -> server.reverb: WSS
+
+server.nginx -> server.php: FastCGI
+server.php -> data: "TCP/3306"
+server.php -> server.worker: диспатч
+server.worker -> data: "TCP/3306"
+server.scheduler -> server.worker: запуск
+server.reverb -> data: "TCP/3306"
+
+server.worker -> external.mikrotik: "RouterOS API\n8728/TCP"
+server.php -> external.cloudinary: HTTPS

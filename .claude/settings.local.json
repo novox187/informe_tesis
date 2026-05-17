@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"C:\\\\Users\\\\novox\\\\Downloads\")",
+      "Bash(ls \"C:\\\\Users\\\\novox\\\\OneDrive\\\\Documentos\\\\Universidad\\\\diploma\\\\informe\" 2>/dev/null; echo \"---\"; ls \"C:\\\\Users\\\\novox\\\\Downloads\" | grep -i \"vkr\\\\|otchet\\\\|posob\\\\|memoria\\\\|sayt\\\\|ejemp\")",
+      "Bash(where pdftoppm *)",
+      "Bash(where pdftotext *)",
+      "Bash(\"C:\\\\Program Files\\\\Git\\\\mingw64\\\\bin\\\\pdftotext.exe\" -enc UTF-8 \"C:\\\\Users\\\\novox\\\\OneDrive\\\\Documentos\\\\Universidad\\\\diploma\\\\informe\\\\Uchebnoe_posobie_OSNOVY_DIPLOMNOGO_PROEKTIROVANIYa.pdf\" \"C:\\\\Users\\\\novox\\\\OneDrive\\\\Documentos\\\\Universidad\\\\diploma\\\\informe\\\\Uchebnoe_posobie.txt\")",
+      "Bash(\"C:\\\\Program Files\\\\Git\\\\mingw64\\\\bin\\\\pdftotext.exe\" -enc UTF-8 \"C:\\\\Users\\\\novox\\\\OneDrive\\\\Documentos\\\\Universidad\\\\diploma\\\\informe\\\\ejemplo de como deberia verse mi informe al final.pdf\" \"C:\\\\Users\\\\novox\\\\OneDrive\\\\Documentos\\\\Universidad\\\\diploma\\\\informe\\\\ejemplo_informe.txt\")",
+      "Bash(ls -la \"C:\\\\Users\\\\novox\\\\OneDrive\\\\Documentos\\\\Universidad\\\\diploma\\\\informe\\\\\"*.txt 2>&1 | head -20)"
+    ]
+  }
+}

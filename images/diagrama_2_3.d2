@@ -1,0 +1,104 @@
+# Рисунок 2.3 — Укрупненная диаграмма прецедентов сотрудников
+direction: right
+
+operator: "Оператор\nабонентского отдела" {
+  shape: person
+  style.fill: "#c8e6c9"
+  style.stroke: "#388e3c"
+  style.stroke-width: 2
+}
+
+finance: "Финансовый\nадминистратор" {
+  shape: person
+  style.fill: "#c8e6c9"
+  style.stroke: "#388e3c"
+  style.stroke-width: 2
+}
+
+network: "Сетевой\nадминистратор" {
+  shape: person
+  style.fill: "#c8e6c9"
+  style.stroke: "#388e3c"
+  style.stroke-width: 2
+}
+
+superadmin: "Суперадмини-\nстратор" {
+  shape: person
+  style.fill: "#fff9c4"
+  style.stroke: "#f9a825"
+  style.stroke-width: 3
+}
+
+system: "Панель администрирования" {
+  style: {
+    fill: "#fafafa"
+    stroke: "#666"
+    stroke-width: 2
+    border-radius: 12
+  }
+
+  cli: "Управлять\nабонентами" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  sus: "Изменять статус\nабонента" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  sup: "Обрабатывать\nобращения" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  pl: "Управлять\nтарифами" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  inv: "Управлять\nсчетами" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  wal: "Пополнять\nлицевой счет" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  rt: "Просматривать\nмаршрутизаторы" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  fw: "Управлять\nбрандмауэром" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  sy: "Синхронизировать\nочереди" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  us: "Управлять\nсотрудниками" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  ro: "Управлять\nролями" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+  rt2: "Управлять\nмаршрутизаторами" {
+    shape: oval
+    style.fill: "#fff3e0"
+  }
+}
+
+operator -> system.cli
+operator -> system.sus
+operator -> system.sup
+
+finance -> system.pl
+finance -> system.inv
+finance -> system.wal
+
+network -> system.rt
+network -> system.fw
+network -> system.sy
+
+superadmin -> system.us
+superadmin -> system.ro
+superadmin -> system.rt2

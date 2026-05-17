@@ -1,0 +1,324 @@
+\section{Рабочий проект}
+
+% Раздел~4. Цель: показать конкретную реализацию системы, ключевые классы,
+% контрольные примеры работы и результаты тестирования. Это уровень <<кода>>:
+% разделы и подсекции опираются на реальные файлы и модули репозиториев
+% ispgestorserver и ispgestoradmin.
+
+\subsection{Структура серверной части}
+
+\subsubsection{Каталоги исходного кода}
+
+% TODO: 0.5 страницы. Описать структуру проекта Laravel:
+% app/Console/Commands, app/Events, app/Http/Controllers,
+% app/Http/Middleware, app/Http/Requests, app/Http/Resources,
+% app/Jobs, app/Models, app/Services, app/Traits, app/Policies;
+% routes/api.php, routes/channels.php, routes/console.php;
+% database/migrations, database/seeders, database/factories;
+% config/*, tests/Feature, tests/Unit.
+
+\subsubsection{Модели Eloquent}
+
+% TODO: 2 страницы. Таблица 4.1 -- основные классы моделей и их назначение.
+% (приведенная таблица должна включать класс, таблица БД, ключевые связи,
+%  бизнес-методы). Привести 1--2 примера выразительного кода (например,
+% Client::isActive(), Wallet::deposit(), Invoice::markAsPaid()).
+
+% Заготовка таблицы 4.1 -- Описание моделей системы
+% Колонки: Класс | Таблица | Назначение | Ключевые методы
+
+\subsubsection{Контроллеры}
+
+% TODO: 1.5 страницы. Таблица 4.2 -- перечень контроллеров.
+% Колонки: Контроллер | Маршрут (префикс) | Назначение.
+% Привести пример типового контроллера (AdminInvoiceController) с разбором
+% методов index/show/store/update/destroy/generateAuto/charge.
+
+\subsubsection{Сервисы и фоновые задачи}
+
+% TODO: 1.5 страницы.
+% Сервисы (app/Services/):
+% -- MikroTikService -- инкапсулирует низкоуровневые вызовы routeros-api-php
+%   (connect, command, disconnect);
+% -- MikroTikQueueSyncService -- алгоритм синхронизации queue/simple;
+% -- AutoBillingService -- генерация счетов, оплата с кошелька;
+% -- ClientSuspensionService -- блокировка/разблокировка абонента;
+% -- AutomationSettingsService -- чтение настроек планировщика из БД.
+% Задачи (app/Jobs/):
+% -- GenerateMonthlyInvoices, ProcessClientSuspension,
+%    ProcessAutoReactivation, SyncMikroTikQueues.
+% Привести пример кода задачи (rough listing 15--20 строк) с обработчиком
+% handle() и тестовым покрытием в tests/Feature/.
+
+\subsubsection{Промежуточные обработчики и политики доступа}
+
+% TODO: 1 страница. Middleware:
+% -- auth:sanctum -- проверка Bearer-токена;
+% -- permission:slug -- проверка разрешения (CheckPermission);
+% -- super_admin -- проверка роли суперадминистратора
+%    (EnsureEmployeeSuperAdmin);
+% -- throttle -- ограничение частоты обращений.
+% Policies (app/Policies/) -- проверки на уровне модели (например,
+% ClientPolicy::update($user, $client) -- сотрудник может править только
+% клиентов своей зоны, если такое ограничение задано).
+
+\subsection{Структура клиентской части}
+
+\subsubsection{Каталоги исходного кода}
+
+% TODO: 0.5 страницы. SvelteKit-проект: src/routes, src/lib/api,
+% src/lib/components, src/lib/stores, src/lib/utils, static/, build/.
+
+\subsubsection{Маршруты и страницы}
+
+% TODO: 1 страница. Таблица 4.3 -- перечень маршрутов SvelteKit.
+% Колонки: Маршрут | Файл | Назначение | Требуемые права.
+
+\subsubsection{Компоненты пользовательского интерфейса}
+
+% TODO: 1 страница. Описание ключевых компонентов:
+% -- Menu.svelte (боковое меню);
+% -- Chart.svelte (рукописный SVG-график с интерполяцией Catmull-Rom);
+% -- KpiCards.svelte (карточки показателей);
+% -- ModalVerFactura.svelte (просмотр и печать счета в jsPDF);
+% -- ChatWidget.svelte (виджет чата с Reverb-подпиской);
+% -- FirewallTable.svelte (таблица правил с режимом редактирования).
+
+\subsubsection{Хранилища состояния}
+
+% TODO: 0.5 страницы. Описание stores:
+% auth.svelte.ts (токен, права, метод can), app.svelte.ts (UI-состояние),
+% usuarios.svelte.ts, mikrotik-firewall.svelte.ts.
+
+\subsubsection{Слой обращения к программному интерфейсу}
+
+% TODO: 0.5 страницы. Модули src/lib/api/. Помощник fetchJsonWithRetry с
+% экспоненциальной задержкой. Конфигурация PUBLIC\_API\_BASE.
+% Кэширование статистики через cookie (срок жизни 1 сутки).
+
+\subsubsection{Подписка на события в режиме реального времени}
+
+% TODO: 1 страница. Инициализация Laravel Echo + pusher-js. Подписка на каналы:
+% private('client.' + currentClient.id) -- уведомления о статусе;
+% private('ticket.' + activeTicket.id) -- сообщения чата;
+% private('employees') -- системные уведомления для сотрудников.
+% Обработчики событий: показ всплывающих уведомлений (svelte-sonner),
+% обновление списка сообщений в чате, обновление KPI на дашборде.
+
+\subsection{Тестирование разработанной системы}
+
+\subsubsection{Стратегия тестирования}
+
+% TODO: 0.5 страницы. Иерархия тестов:
+% Unit-тесты (tests/Unit) -- модели и сервисы в изоляции от БД;
+% Feature-тесты (tests/Feature) -- запросы к API через TestCase
+%   с in-memory SQLite либо тестовой MySQL-БД;
+% Vitest (frontend) -- тесты Svelte-компонентов и утилит.
+% Используется PestPHP 4.1 (синтаксис в стиле it()/expect()).
+
+\subsubsection{Модульное тестирование серверной части}
+
+% TODO: 1.5 страницы. Привести пример теста (PHP/Pest, 20--30 строк),
+% покрывающего:
+% -- генерацию номера счета (Invoice::generateInvoiceNumber);
+% -- проверку метода Wallet::makePayment с отрицательным балансом;
+% -- сценарий блокировки/разблокировки (ClientSuspensionService).
+% Привести таблицу 4.X -- покрытие тестами по подсистемам.
+
+\begin{figure}[ht]
+\centering
+% TODO: листинг кода теста (Pest).
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет листинг модульного теста, например, проверки генерации номера счета SRI)}}}
+\caption{Модульный тест генерации номера счета}
+\label{fig:unit_test_invoice}
+\end{figure}
+
+\subsubsection{Интеграционное тестирование RouterOS API}
+
+% TODO: 1 страница. Описание стенда: один маршрутизатор MikroTik
+% RB951Ui-2HnD (или CHR в виртуальной машине), доступ по IP 192.168.88.1,
+% RouterOS 7.x. Тест-команда php artisan mikrotik:test проверяет:
+% (1) подключение по 8728/TCP, (2) выполнение /system/identity/print,
+% (3) создание тестовой очереди /queue/simple/add name="test_..." и
+% последующее /queue/simple/remove, (4) чтение /interface/print,
+% (5) право на запись в /ip/firewall/filter (создание и откат правила-заглушки).
+
+\subsubsection{Системное тестирование}
+
+% TODO: 4--5 страниц с серией контрольных примеров (скриншоты системы).
+
+На рисунке~\ref{fig:login_page} представлена страница входа в панель администрирования.
+
+\begin{figure}[ht]
+\centering
+% TODO: Insertar aquí captura de la página de login del panel administrativo
+% (URL https://...admin/login). Debe mostrar: campo Email con validación,
+% campo Contraseña con toggle de visibilidad, botón "Iniciar sesión",
+% panel derecho con badges (MikroTik nativo, KPIs en vivo, Multi-zona,
+% Facturación Auto, Control Firewall, Auto-cut, Roles, Alerts,
+% Real-time Support). Estilo: glassmorphic dark.
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот страницы входа в систему)}}}
+\caption{Страница входа в панель администрирования}
+\label{fig:login_page}
+\end{figure}
+
+На рисунке~\ref{fig:dashboard} представлена главная страница (Dashboard).
+
+\begin{figure}[H]
+\centering
+% TODO: Insertar aquí captura del Dashboard del panel administrativo
+% después de login. Debe mostrar: cards KPI superiores (Clientes activos,
+% Clientes suspendidos, Facturado este mes, Cobrado este mes, Pendiente),
+% gráfico de líneas Facturado/Cobrado/Pendiente con interpolación suave,
+% sección "Top deudores" con 5 clientes, estado de MikroTik (online/offline),
+% sidebar izquierdo expandido.
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот панели аналитики Dashboard)}}}
+\caption{Панель аналитики системы (Dashboard)}
+\label{fig:dashboard}
+\end{figure}
+
+На рисунке~\ref{fig:clients} представлен реестр абонентов.
+
+\begin{figure}[H]
+\centering
+% TODO: Insertar aquí captura del registro de clientes (/clientes).
+% Debe mostrar: barra de búsqueda superior, filtros por estado
+% (Activo/Limitado/Suspendido/Cancelado), lista lateral izquierda estilo
+% chat-Telegram con avatar+nombre+IP+estado, panel central con detalle
+% del cliente seleccionado (foto, datos personales, dirección,
+% coordenadas GPS, plan activo, saldo wallet, botones de acción
+% Suspender/Activar/Cancelar).
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот реестра абонентов)}}}
+\caption{Реестр абонентов с детальной карточкой}
+\label{fig:clients}
+\end{figure}
+
+На рисунке~\ref{fig:plans} представлен каталог тарифных планов.
+
+\begin{figure}[H]
+\centering
+% TODO: Insertar aquí captura del catálogo de planes (/planes).
+% Debe mostrar: tabla con columnas Nombre, Velocidad descarga/subida,
+% Precio mensual, Estado (Activo/Inactivo), Featured (estrella),
+% botones de acción Editar/Desactivar. Modal de creación/edición de plan
+% con todos los campos (name, slug, description, download_speed,
+% upload_speed, symmetric checkbox, monthly_price, billing_cycle,
+% mikrotik_queue_name).
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот каталога тарифных планов)}}}
+\caption{Каталог тарифных планов}
+\label{fig:plans}
+\end{figure}
+
+На рисунке~\ref{fig:invoices} представлен список счетов на оплату.
+
+\begin{figure}[H]
+\centering
+% TODO: Insertar aquí captura del módulo de facturación (/facturas).
+% Debe mostrar: filtros por rango de fechas y estado, tabla con columnas
+% Número (formato 001-001-NNNNNNNNN), Cliente, Fecha emisión, Vencimiento,
+% Total, Estado (Pendiente/Pagado/Vencido), badge colorido.
+% Si es posible, mostrar también el ModalVerFactura con el preview del PDF
+% que se generaría con jsPDF.
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот модуля управления счетами)}}}
+\caption{Модуль управления счетами}
+\label{fig:invoices}
+\end{figure}
+
+На рисунке~\ref{fig:invoice_pdf} представлен пример сгенерированного счета в формате PDF.
+
+\begin{figure}[H]
+\centering
+% TODO: Insertar aquí captura del PDF de una factura generada
+% (descargar desde el ModalVerFactura, exportada vía jsPDF + jspdf-autotable).
+% Debe mostrar: cabecera con datos del emisor (RUC, nombre comercial,
+% dirección, snapshot fiscal), datos del cliente (ID, nombre, dirección),
+% número de factura, fechas, tabla de líneas (concepto del plan + cantidad
+% + precio unitario), subtotal, impuesto (15% IVA Ecuador), total,
+% método de pago, status badge.
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот сгенерированного счета в формате PDF)}}}
+\caption{Печатная форма счета, сгенерированная средствами jsPDF}
+\label{fig:invoice_pdf}
+\end{figure}
+
+На рисунке~\ref{fig:mikrotik_firewall} представлена страница управления правилами брандмауэра MikroTik.
+
+\begin{figure}[H]
+\centering
+% TODO: Insertar aquí captura de /mikrotik/firewall. Debe mostrar:
+% selector de router (dropdown con MikrotikRouter activos),
+% pestañas Filter Rules / NAT Rules,
+% tabla de reglas con columnas Prioridad, Chain, Action, Protocolo,
+% Src/Dst addr, Comentario, Estado (enabled/disabled),
+% botones Add Rule / Apply Changes / Rollback,
+% indicador "Sin cambios" o "N cambios pendientes",
+% lateral derecho con histórico de aplicaciones (apply logs).
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот страницы управления правилами брандмауэра)}}}
+\caption{Управление правилами брандмауэра MikroTik}
+\label{fig:mikrotik_firewall}
+\end{figure}
+
+На рисунке~\ref{fig:mikrotik_queues} представлена страница мониторинга простых очередей.
+
+\begin{figure}[H]
+\centering
+% TODO: Insertar aquí captura de /mikrotik/colas. Debe mostrar:
+% tabla con columnas Nombre de la queue (formato plan-N-cliente-M),
+% Target IP, Max-limit upload/download, Tráfico actual (bytes/sec),
+% Estado (verde si activa). Botón "Sincronizar ahora" en la cabecera,
+% "Limpiar huérfanos" con confirmación.
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот мониторинга простых очередей MikroTik)}}}
+\caption{Мониторинг простых очередей маршрутизатора}
+\label{fig:mikrotik_queues}
+\end{figure}
+
+На рисунке~\ref{fig:chat} представлена страница технической поддержки.
+
+\begin{figure}[H]
+\centering
+% TODO: Insertar aquí captura del módulo de chat de soporte.
+% Debe mostrar: lista lateral izquierda de conversaciones abiertas con
+% avatar/nombre/último mensaje/contador no-leídos,
+% panel central con historial de mensajes (burbujas alternando lado),
+% indicador de "escribiendo...", input inferior con botones de adjuntar
+% archivo y enviar, header con datos del cliente y botones
+% Asignar/Cambiar estado/Cerrar ticket.
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот подсистемы технической поддержки)}}}
+\caption{Подсистема технической поддержки с обменом сообщениями}
+\label{fig:chat}
+\end{figure}
+
+На рисунке~\ref{fig:roles} представлена страница управления ролями сотрудников.
+
+\begin{figure}[H]
+\centering
+% TODO: Insertar aquí captura de /usuarios/roles. Debe mostrar:
+% lista de roles (super_admin, operador_clientes, administrador_financiero,
+% administrador_red, observador), matriz de permisos en cuadrícula
+% (filas = módulos: usuarios/clientes/planes/facturas/configuracion/
+% soporte/mikrotik; columnas = acciones: ver/crear/editar/eliminar/gestionar),
+% checkboxes por celda.
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот матрицы ролей и разрешений)}}}
+\caption{Управление ролями сотрудников и разрешениями}
+\label{fig:roles}
+\end{figure}
+
+На рисунке~\ref{fig:client_portal} представлен личный кабинет абонента.
+
+\begin{figure}[H]
+\centering
+% TODO: Insertar aquí captura del portal del cliente.
+% Debe mostrar: header con nombre del cliente y botón logout,
+% sección "Mi plan actual" (nombre, velocidad, precio, fecha de próximo
+% cobro), sección "Mi saldo" con balance del wallet y botón "Recargar",
+% sección "Últimas facturas" con tabla (número, fecha, monto, estado,
+% botón descargar PDF), sección "Soporte" con botón "Abrir chat con soporte".
+\fbox{\parbox{0.7\linewidth}{\centering\textit{(Здесь будет скриншот личного кабинета абонента)}}}
+\caption{Личный кабинет абонента}
+\label{fig:client_portal}
+\end{figure}
+
+\subsubsection{Результаты тестирования}
+
+% TODO: 1 страница. Сводная таблица 4.X -- результаты тестирования по
+% сценариям (прецедент, ожидаемый результат, фактический результат,
+% оценка). Замечания по найденным дефектам и их устранению.
