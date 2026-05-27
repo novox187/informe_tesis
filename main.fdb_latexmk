@@ -1,10 +1,10 @@
 # Fdb version 4
-["xdvipdfmx"] 1779882920.86444 "main.xdv" "main.pdf" "main" 1779882924.75133 0
-  "main.xdv" 1779882920.75239 1417664 5920cd96b2d81d42cbcd88bd2620ebee "xelatex"
+["xdvipdfmx"] 1779883827.37115 "main.xdv" "main.pdf" "main" 1779883831.08901 0
+  "main.xdv" 1779883827.25945 1406808 2ca74cfd37c81f1a5618b2d08eff57b7 "xelatex"
   (generated)
   "main.pdf"
   (rewritten before read)
-["xelatex"] 1779882919.70933 "main.tex" "main.xdv" "main" 1779882924.74958 0
+["xelatex"] 1779883826.23322 "main.tex" "main.xdv" "main" 1779883831.0872 0
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1775415801 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1775415801 1528 f853c4d1b4e0550255e02831fdc8496f ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1775415801 1524 4414a8315f39513458b80dfc63bff03a ""
@@ -201,8 +201,8 @@
   "/var/lib/texmf/web2c/xetex/xelatex.fmt" 1779880709 5735620 c8252f48342803c948731076e35521b0 ""
   "images/Clientes.png" 1779882197.13404 146690 f4f8e34dce1900f338adfd175deddb56 ""
   "images/CortaFuegos.png" 1779882288.91025 143991 3a2ed85e81f628226e01eb38cd8c4d8d ""
-  "images/Dashboard.png" 1779881589.81508 225212 0629dd57fbac20437caae4072184968d ""
-  "images/SoporteTecnico.png" 1779882360.507 290490 e5ad3031d91214e775d507eb2b8b54c3 ""
+  "images/Dashboard.png" 1779883387.12845 133165 494a8e2a8e6ddfe1238c48a1c5847447 ""
+  "images/SoporteTecnico.png" 1779883277.85671 298611 7a55d5c9f049a1c6d668e465c19f837e ""
   "images/diagrama_2_1.png" 1779879653.72953 87849 b7e93b42c77871edb86c1800bffd957f ""
   "images/diagrama_2_3.png" 1779879653.73053 242975 1f152a253365aee8ce8cd92c4ee4a82a ""
   "images/diagrama_3_1.png" 1779879653.73253 306625 1a0dd62cdabe6010abefbf5e9b9fddcf ""
@@ -210,17 +210,17 @@
   "images/diagrama_3_3.png" 1779879653.73553 406507 44edc34ba175b461494b4c10a17b691d ""
   "images/diagrama_3_4.png" 1779879653.73953 645667 110ff7dc3ab91608e5a17522cd2fa690 ""
   "images/diagrama_db.png" 1779879653.74353 701055 d86766e5ced1f465ab1a2185d9aceb6b ""
-  "main.aux" 1779882920.74926 20939 92b8e8c0cdc282400cba0d6f5c37667c "xelatex"
-  "main.lpc" 1779882920.40298 0 d41d8cd98f00b204e9800998ecf8427e "xelatex"
-  "main.out" 1779882920.7515 21792 e21a1896002a4fb9d419caafbd00cb77 "xelatex"
+  "main.aux" 1779883827.25672 20939 91cc2890f6f0b06e905a7aca6ecd893e "xelatex"
+  "main.lpc" 1779883826.92411 0 d41d8cd98f00b204e9800998ecf8427e "xelatex"
+  "main.out" 1779883827.25872 21792 e21a1896002a4fb9d419caafbd00cb77 "xelatex"
   "main.tex" 1779879653.78889 2820 0a7dd8a5c5020d2bcac54d4ccbcad79d ""
-  "main.toc" 1779882920.75239 8845 01ae74f17c4089d50835de394c40506d "xelatex"
+  "main.toc" 1779883827.25945 8845 01ae74f17c4089d50835de394c40506d "xelatex"
   "setup.tex" 1779879653.78889 7738 b1f4d859e8f78398d08dc396015c9411 ""
   "vkr.cls" 1779879653.78889 26975 2d50891a15fe208be68c2e037f46947f ""
   "xltabular.sty" 1779879653.78889 3742 f113d390395a855fa1cfad7f2eaf0810 ""
   "Анализ.tex" 1779879653.78889 47581 33c60cce1697a718d4bed5cf39a7b026 ""
   "Обозначения.tex" 1779879653.78889 6553 2db3c1f7604fb6d26f648d87d58ca96b ""
-  "СписокИсточников.tex" 1779879653.78889 15336 00d23a8fe6a899f91b52c2da9e92f6cf ""
+  "СписокИсточников.tex" 1779883820.24417 13506 771afd8be996bc1ebebbd6f81cdf24cc ""
   "ТехЗадание.tex" 1779881911.28697 48999 e00ff2098e5a8bfd4f581898295e4dfe ""
   "ТехПроект.tex" 1779882917.44356 106638 9a96d69a3204deac67751773c549e40e ""
   (generated)
