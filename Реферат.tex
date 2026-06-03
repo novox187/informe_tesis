@@ -2,7 +2,7 @@
 
 Объем работы равен \formbytotal{lastpage}{страниц}{е}{ам}{ам}. Работа содержит \formbytotal{figurecnt}{иллюстраци}{ю}{и}{й}, \formbytotal{tablecnt}{таблиц}{у}{ы}{}, \arabic{bibcount} библиографических источников и \formbytotal{числоПлакатов}{лист}{}{а}{ов} графического материала. Количество приложений~--~2. Графический материал представлен в приложении~А. Фрагменты исходного кода представлены в приложении~Б.
 
-Перечень ключевых слов: интернет-провайдер, MikroTik, RouterOS, биллинг, автоматизация, веб-приложение, Laravel, Svelte, REST API, WebSocket, Reverb, брандмауэр, простые очереди, разграничение доступа, тарифный план, панель администрирования, информационная система, клиент-серверная архитектура, реляционная база данных, ролевая модель.
+Перечень ключевых слов: интернет-провайдер, MikroTik, RouterOS, биллинг, автоматизация, веб-приложение, Laravel, Svelte, REST API, брандмауэр, простые очереди, разграничение доступа, тарифный план, панель администрирования, информационная система, клиент-серверная архитектура, реляционная база данных, ролевая модель.
 
 Объектом разработки является веб-система для автоматизированного управления клиентами интернет-провайдера малого и среднего масштаба, интегрированная с маршрутизаторами MikroTik по протоколу RouterOS~API. В состав системы входят серверная часть (программный интерфейс REST API) и панель администрирования для сотрудников оператора.
 
@@ -10,7 +10,7 @@
 
 В процессе разработки проведен сравнительный анализ существующих систем биллинга и управления интернет-провайдерами, сформированы функциональные и нефункциональные требования, спроектирована многоуровневая клиент-серверная архитектура, разработана реляционная модель данных, описан программный интерфейс в стиле REST, реализована подсистема интеграции с маршрутизаторами MikroTik, спроектированы фоновые задачи биллинга и автоматической блокировки абонентов-должников. Архитектура системы спроектирована с учетом возможности дальнейшего расширения за счет личного кабинета абонента (вне рамок настоящей работы).
 
-При разработке использовались язык программирования PHP в составе фреймворка Laravel, библиотека для работы с RouterOS API, реляционная СУБД MySQL, серверное расширение Laravel Reverb для двунаправленного обмена сообщениями по протоколу WebSocket, библиотека Svelte и метафреймворк SvelteKit для построения клиентской части в виде одностраничного приложения.
+При разработке использовались язык программирования PHP в составе фреймворка Laravel, библиотека для работы с RouterOS API, реляционная СУБД MySQL, библиотека Svelte и метафреймворк SvelteKit для построения клиентской части в виде одностраничного приложения.
 
 Разработанная система прошла тестирование в стендовых условиях с подключенным маршрутизатором MikroTik и готова к опытной эксплуатации в небольших интернет-провайдерах.
 
@@ -19,7 +19,7 @@
 
 The volume of work is \formbytotal{lastpage}{page}{}{s}{s}. The work contains \formbytotal{figurecnt}{illustration}{}{s}{s}, \formbytotal{tablecnt}{table}{}{s}{s}, \arabic{bibcount} bibliographic sources and \formbytotal{числоПлакатов}{sheet}{}{s}{s} of graphic material. The number of appendices is~2. The graphic material is presented in appendix~A. Source code fragments are presented in appendix~B.
 
-List of keywords: Internet service provider, MikroTik, RouterOS, billing, automation, web application, Laravel, Svelte, REST API, WebSocket, Reverb, firewall, simple queues, role-based access control, service plan, administration panel, information system, client-server architecture, relational database, role-based model.
+List of keywords: Internet service provider, MikroTik, RouterOS, billing, automation, web application, Laravel, Svelte, REST API, firewall, simple queues, role-based access control, service plan, administration panel, information system, client-server architecture, relational database, role-based model.
 
 The object of development is a web system for automated management of subscribers of a small and medium-scale Internet service provider, integrated with MikroTik routers via the RouterOS~API protocol. The system consists of a server-side component (REST API) and an administration panel for the operator's staff.
 
@@ -27,7 +27,7 @@ The purpose of the final qualifying work is to reduce the labor costs of the Int
 
 During the development, a comparative analysis of existing billing and Internet service provider management systems was performed, functional and non-functional requirements were formed, a multi-layer client-server architecture was designed, a relational data model was developed, a REST-style application programming interface was described, an integration subsystem with MikroTik routers was implemented, background billing jobs and automatic suspension of debtor subscribers were designed. The system architecture is designed to allow future extension with a subscriber self-service portal (outside the scope of this work).
 
-The development used the PHP programming language as part of the Laravel framework, a library for working with the RouterOS API, the MySQL relational DBMS, the Laravel Reverb server extension for bidirectional message exchange over the WebSocket protocol, the Svelte library and the SvelteKit metaframework for building the client-side as a single-page application.
+The development used the PHP programming language as part of the Laravel framework, a library for working with the RouterOS API, the MySQL relational DBMS, the Svelte library and the SvelteKit metaframework for building the client-side as a single-page application.
 
 The developed system has been tested in bench conditions with a connected MikroTik router and is ready for pilot operation in small Internet service providers.
 
