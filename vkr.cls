@@ -570,7 +570,6 @@
     \setcounter{figurecnt}{0}
     \section*{СОДЕРЖАНИЕ}%
     \@starttoc{toc}%
-    \списокПлакатовСодержание
     }
 
 \newcommand*\l@section{\@dottedtocline{1}{0pt}{1.3em}}
