@@ -306,7 +306,7 @@ Route::post('/admin/invoices', [AdminInvoiceController::class, 'store'])
 \texttt{firewall\_filter\_rules} & Правила фильтрации трафика брандмауэра MikroTik \\ \hline
 \texttt{firewall\_nat\_rules} & Правила трансляции сетевых адресов брандмауэра MikroTik \\ \hline
 \texttt{firewall\_apply\_logs} & Журнал применений изменений правил со снимками <<до>> и <<после>> для возможности отката \\ \hline
-\texttt{internet\_service\_providers}, \texttt{isp\_connections} & Реестр внешних поставщиков канала связи и параметры подключений \\ \hline
+\dbfield{internet\_service\_providers}, \dbfield{isp\_connections} & Реестр внешних поставщиков канала связи и параметры подключений \\ \hline
 \texttt{system\_settings} & Типизированные системные настройки модулей (биллинг, фискальные реквизиты, MikroTik) \\ \hline
 \texttt{automation\_settings} & Расписание автоматических задач планировщика \\ \hline
 \texttt{import\_history} & Журнал массовых импортов с возможностью отката \\ \hline
@@ -315,7 +315,7 @@ Route::post('/admin/invoices', [AdminInvoiceController::class, 'store'])
 
 Ниже приведены подробные структуры таблиц, играющих центральную роль в системе. Структура реестра абонентов \texttt{clients} приведена в таблице~\ref{tbl:db_clients}.
 
-\begin{xltabular}{\textwidth}{|p{3.0cm}|p{3.0cm}|p{1.6cm}|X|}
+\begin{xltabular}{\textwidth}{|p{2.4cm}|p{3.6cm}|p{1.6cm}|X|}
 \caption{Структура таблицы \texttt{clients}\label{tbl:db_clients}}\\ \hline
 \centrow Поле & \centrow Тип & \centrow Обязат. & \centrow Назначение \\ \hline
 \endfirsthead
@@ -338,7 +338,7 @@ password & VARCHAR(128) & Да & Хеш пароля абонента \\ \hline
 
 Структура таблицы счетов \texttt{invoices} приведена в таблице~\ref{tbl:db_inv}.
 
-\begin{xltabular}{\textwidth}{|p{3.0cm}|p{3.0cm}|p{1.6cm}|X|}
+\begin{xltabular}{\textwidth}{|p{2.4cm}|p{3.6cm}|p{1.6cm}|X|}
 \caption{Структура таблицы \texttt{invoices}\label{tbl:db_inv}}\\ \hline
 \centrow Поле & \centrow Тип & \centrow Обязат. & \centrow Назначение \\ \hline
 \endfirsthead

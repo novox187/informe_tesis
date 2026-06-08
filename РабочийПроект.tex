@@ -73,7 +73,7 @@
 \texttt{FirewallFilterRule} & \dbfield{firewall\_filter\_rules} & Правило фильтрации трафика, синхронизируемое с цепочкой \texttt{filter} маршрутизатора \\ \hline
 \texttt{FirewallNatRule} & \dbfield{firewall\_nat\_rules} & Правило преобразования адресов (NAT), синхронизируемое с цепочкой \texttt{nat} маршрутизатора \\ \hline
 \texttt{FirewallApplyLog} & \dbfield{firewall\_apply\_logs} & Журнал применения правил с возможностью отката изменений \\ \hline
-\texttt{InternetServiceProvider} & \dbfield{internet\_service\_providers} & Сведения о вышестоящем провайдере, у которого арендуется канал \\ \hline
+\texttt{InternetService\newline Provider} & \dbfield{internet\_service\_providers} & Сведения о вышестоящем провайдере, у которого арендуется канал \\ \hline
 \texttt{IspConnection} & \dbfield{isp\_connections} & Параметры подключения к вышестоящему провайдеру \\ \hline
 \texttt{AutomationSetting} & \dbfield{automation\_settings} & Настройки расписания фоновых задач (биллинг, синхронизация очередей) \\ \hline
 \texttt{Setting} & \dbfield{system\_settings} & Общесистемные настройки: реквизиты провайдера, фискальные коды, параметры NDS \\ \hline
@@ -81,8 +81,8 @@
 \texttt{ClientEvent} & \dbfield{client\_events} & Событие абонента, рассылаемое по приватному каналу широковещания \\ \hline
 \texttt{ClientWhitelist} & \dbfield{client\_whitelists} & Список адресов, освобожденных от автоматической блокировки \\ \hline
 \texttt{ImportHistory} & \dbfield{import\_history} & Журнал партий импорта абонентов из табличных файлов \\ \hline
-\texttt{NotificationChannelConfig} & \dbfield{notification\_channel\_configs} & Параметры канала доставки уведомлений (Telegram, e-mail и др.) \\ \hline
-\texttt{NotificationEventRoute} & \dbfield{notification\_event\_routes} & Соответствие <<событие~--~канал~--~получатель>> для маршрутизации уведомлений \\ \hline
+\texttt{Notification\newline ChannelConfig} & \dbfield{notification\_channel\_configs} & Параметры канала доставки уведомлений (Telegram, e-mail и др.) \\ \hline
+\texttt{Notification\newline EventRoute} & \dbfield{notification\_event\_routes} & Соответствие <<событие~--~канал~--~получатель>> для маршрутизации уведомлений \\ \hline
 \texttt{NotificationLog} & \dbfield{notification\_logs} & Журнал отправленных уведомлений с признаком успеха или ошибки \\ \hline
 \end{xltabular}
 
@@ -127,15 +127,15 @@ public function deposit($amount, $description = "Recarga de saldo")
 \texttt{Admin\textbackslash PlanController} & \route{/planes}, \route{/plans} & Каталог тарифных планов: создание, переключение статуса, привязка к очереди MikroTik \\ \hline
 \texttt{Admin\textbackslash InvoiceController} & \route{/invoices} & Управление счетами на оплату: ручной выпуск, автоматическая генерация по контрактам, прием платежа \\ \hline
 \texttt{Admin\textbackslash TransactionController} & \route{/transactions} & Просмотр и подтверждение финансовых операций кошельков \\ \hline
-\texttt{Admin\textbackslash MikrotikRouterController} & \route{/mikrotik-routers} & Реестр маршрутизаторов: проверка подключения, переключение основного устройства \\ \hline
+\texttt{Admin\textbackslash MikrotikRouter\newline Controller} & \route{/mikrotik-routers} & Реестр маршрутизаторов: проверка подключения, переключение основного устройства \\ \hline
 \texttt{Admin\textbackslash AutomationController} & \route{/automations} & Настройки расписания фоновых задач, ручной запуск, журнал аудита изменений \\ \hline
-\texttt{Admin\textbackslash NotificationSettingsController} & \route{/notifications} & Каталог уведомлений, маршрутизация событий, тестовая отправка, журнал отправок \\ \hline
-\texttt{Admin\textbackslash InternetServiceProviderController} & \route{/isps} & Реестр вышестоящих интернет-провайдеров \\ \hline
-\texttt{Admin\textbackslash IspConnectionController} & \route{/isp-connections} & Учет каналов связи с вышестоящими провайдерами \\ \hline
-\texttt{Admin\textbackslash ClientWhitelistController} & \route{/client-whitelists} & Управление списком абонентов, исключенных из автоблокировки \\ \hline
+\texttt{Admin\textbackslash Notification\newline SettingsController} & \route{/notifications} & Каталог уведомлений, маршрутизация событий, тестовая отправка, журнал отправок \\ \hline
+\texttt{Admin\textbackslash InternetService\newline ProviderController} & \route{/isps} & Реестр вышестоящих интернет-провайдеров \\ \hline
+\texttt{Admin\textbackslash IspConnection\newline Controller} & \route{/isp-connections} & Учет каналов связи с вышестоящими провайдерами \\ \hline
+\texttt{Admin\textbackslash ClientWhitelist\newline Controller} & \route{/client-whitelists} & Управление списком абонентов, исключенных из автоблокировки \\ \hline
 \texttt{Admin\textbackslash ImportController} & \route{/imports} & Импорт абонентов из табличных файлов, откат партии импорта \\ \hline
 \texttt{Admin\textbackslash SettingController} & \route{/settings} & Общесистемные параметры: реквизиты провайдера, фискальные коды, ставки налогов \\ \hline
-\texttt{Admin\textbackslash SystemBootstrapController} & \route{/system-bootstrap} & Проверка готовности системы и параметров первичной настройки \\ \hline
+\texttt{Admin\textbackslash SystemBootstrap\newline Controller} & \route{/system-bootstrap} & Проверка готовности системы и параметров первичной настройки \\ \hline
 \texttt{Admin\textbackslash ChatController} & \route{/admin/tickets} & Регистрация обращений сотрудниками и ведение внутренней переписки по обращению \\ \hline
 \texttt{FirewallController} & \route{/firewall} & Управление правилами фильтра и NAT, фиксация и откат снимков состояния \\ \hline
 \texttt{MikroTikController} & \route{/mikrotik} & Низкоуровневые операции с маршрутизатором: статус интерфейсов, очереди, активные сеансы \\ \hline
@@ -301,29 +301,29 @@ SvelteKit использует файловую систему как источ
 \continuecaption{Продолжение таблицы \ref{tab:client_routes}}
 \centrow Маршрут & \centrow Назначение & \centrow Требуемые права \\ \hline
 \finishhead
-\route{/} & Главная страница (Dashboard) со сводными показателями деятельности & аутентификация \\ \hline
+\route{/} & Главная страница (Dashboard) со сводными показателями деятельности & аутенти\-фикация \\ \hline
 \route{/login} & Страница входа сотрудника в панель администрирования & не требуется \\ \hline
 \route{/admin/login} & Альтернативная точка входа для суперадминистратора & не требуется \\ \hline
 \route{/clientes} & Реестр абонентов и детальная карточка клиента & \texttt{clientes.ver} \\ \hline
 \route{/planes} & Каталог тарифных планов & \texttt{planes.ver} \\ \hline
 \route{/facturas} & Модуль управления счетами на оплату & \texttt{facturas.ver} \\ \hline
 \route{/usuarios} & Учет сотрудников провайдера & \texttt{usuarios.ver} \\ \hline
-\route{/usuarios/roles} & Управление ролями и матрицей разрешений & \texttt{usuarios.gestionar} \\ \hline
-\route{/proveedores} & Реестр вышестоящих интернет-провайдеров & \texttt{configuracion.ver} \\ \hline
-\route{/proveedores/[id]/conexiones} & Каналы связи конкретного вышестоящего провайдера & \texttt{configuracion.ver} \\ \hline
+\route{/usuarios/roles} & Управление ролями и матрицей разрешений & \texttt{usuarios.\newline gestionar} \\ \hline
+\route{/proveedores} & Реестр вышестоящих интернет-провайдеров & \texttt{configuracion.\newline ver} \\ \hline
+\route{/proveedores/[id]/conexiones} & Каналы связи конкретного вышестоящего провайдера & \texttt{configuracion.\newline ver} \\ \hline
 \route{/mikrotik} & Сводный экран подсистемы MikroTik & \texttt{mikrotik.ver} \\ \hline
 \route{/mikrotik/dispositivos} & Реестр маршрутизаторов с проверкой подключения & \texttt{mikrotik.ver} \\ \hline
-\route{/mikrotik/firewall} & Управление правилами фильтра и NAT с фиксацией снимков и откатом & \texttt{mikrotik.gestionar} \\ \hline
+\route{/mikrotik/firewall} & Управление правилами фильтра и NAT с фиксацией снимков и откатом & \texttt{mikrotik.\newline gestionar} \\ \hline
 \route{/mikrotik/colas} & Мониторинг простых очередей и кнопка ручной синхронизации & \texttt{mikrotik.ver} \\ \hline
-\route{/mikrotik/sincronizacion} & Подробный отчет о синхронизации тарифных ограничений & \texttt{mikrotik.gestionar} \\ \hline
+\route{/mikrotik/sincronizacion} & Подробный отчет о синхронизации тарифных ограничений & \texttt{mikrotik.\newline gestionar} \\ \hline
 \route{/mikrotik/monitoreo} & Журнал доступности маршрутизаторов & \texttt{mikrotik.ver} \\ \hline
-\route{/configuraciones} & Корневая страница раздела настроек & \texttt{configuracion.ver} \\ \hline
-\route{/configuraciones/facturacion} & Фискальные параметры и реквизиты эмитента & \texttt{configuracion.gestionar} \\ \hline
-\route{/configuraciones/workers} & Расписание фоновых задач (автобиллинг, синхронизация очередей) & \texttt{configuracion.gestionar} \\ \hline
-\route{/configuraciones/whitelist} & Управление списком абонентов, освобожденных от автоблокировки & \texttt{configuracion.gestionar} \\ \hline
-\route{/configuraciones/importacion} & Импорт абонентов из табличных файлов с откатом & \texttt{configuracion.gestionar} \\ \hline
-\route{/configuraciones/notificaciones} & Каналы и маршрутизация уведомлений (Telegram, e-mail) & \texttt{configuracion.gestionar} \\ \hline
-\route{/perfil} & Личный профиль сотрудника, смена пароля & аутентификация \\ \hline
+\route{/configuraciones} & Корневая страница раздела настроек & \texttt{configuracion.\newline ver} \\ \hline
+\route{/configuraciones/facturacion} & Фискальные параметры и реквизиты эмитента & \texttt{configuracion.\newline gestionar} \\ \hline
+\route{/configuraciones/workers} & Расписание фоновых задач (автобиллинг, синхронизация очередей) & \texttt{configuracion.\newline gestionar} \\ \hline
+\route{/configuraciones/whitelist} & Управление списком абонентов, освобожденных от автоблокировки & \texttt{configuracion.\newline gestionar} \\ \hline
+\route{/configuraciones/importacion} & Импорт абонентов из табличных файлов с откатом & \texttt{configuracion.\newline gestionar} \\ \hline
+\route{/configuraciones/notificaciones} & Каналы и маршрутизация уведомлений (Telegram, e-mail) & \texttt{configuracion.\newline gestionar} \\ \hline
+\route{/perfil} & Личный профиль сотрудника, смена пароля & аутенти\-фикация \\ \hline
 \end{xltabular}
 
 Каждый маршрут защищен на стороне клиента проверкой авторизации, инициализированной в корневом файле \route{src/routes/+layout.svelte}: при отсутствии действующего маркера пользователь автоматически перенаправляется на страницу входа. Дополнительно для отдельных разделов выполняется проверка наличия требуемого разрешения у текущего сотрудника, что предотвращает рендеринг неавторизованных интерфейсов. Окончательное подтверждение прав остается за серверной частью, что исключает возможность обхода ограничений путем модификации клиентского кода.
@@ -348,18 +348,18 @@ SvelteKit использует файловую систему как источ
 \texttt{EstadoRouter.svelte} & Индикатор состояния маршрутизатора с автообновлением \\ \hline
 \texttt{CapacidadISP.svelte} & Визуализация занятой и доступной полосы пропускания по каналам вышестоящих провайдеров \\ \hline
 \texttt{facturas/TablaFacturas.svelte} & Таблица счетов с фильтрами по статусу и периоду \\ \hline
-\texttt{facturas/ModalVerFactura.svelte} & Модальный просмотр счета с экспортом в PDF средствами \texttt{jsPDF} и \texttt{jspdf-autotable} \\ \hline
-\texttt{facturas/ModalCrearFactura.svelte} & Форма ручного выпуска счета \\ \hline
-\texttt{facturas/ModalConfigGuard.svelte} & Защитный диалог, блокирующий генерацию счета при неполной фискальной настройке \\ \hline
+\texttt{facturas/\newline ModalVerFactura.svelte} & Модальный просмотр счета с экспортом в PDF средствами \texttt{jsPDF} и \texttt{jspdf-autotable} \\ \hline
+\texttt{facturas/\newline ModalCrearFactura.svelte} & Форма ручного выпуска счета \\ \hline
+\texttt{facturas/\newline ModalConfigGuard.svelte} & Защитный диалог, блокирующий генерацию счета при неполной фискальной настройке \\ \hline
 \texttt{clientes/TablaClientes.svelte} & Реестр абонентов с виртуализацией списка и фильтрацией по статусу \\ \hline
 \texttt{clientes/ModalCliente.svelte} & Единый модальный просмотр карточки абонента \\ \hline
-\texttt{clientes/TarjetasEstadisticas.svelte} & Карточки статистики реестра абонентов \\ \hline
+\texttt{clientes/Tarjetas\newline Estadisticas.svelte} & Карточки статистики реестра абонентов \\ \hline
 \texttt{mikrotik/firewall/*} & Подкаталог компонентов управления брандмауэром (таблицы правил фильтра и NAT, режим редактирования, индикатор несохраненных изменений, журнал применения) \\ \hline
-\texttt{mikrotik/MikroTikActionCard.svelte} & Универсальная карточка действия подсистемы MikroTik \\ \hline
+\texttt{mikrotik/MikroTik\newline ActionCard.svelte} & Универсальная карточка действия подсистемы MikroTik \\ \hline
 \texttt{common/Tooltip.svelte} & Универсальная всплывающая подсказка \\ \hline
 \texttt{common/Toggle.svelte} & Переключатель состояния (используется для активации правил, тарифов, режимов) \\ \hline
-\texttt{common/ModalConfirmacion.svelte} & Двухступенчатое подтверждение для разрушающих операций \\ \hline
-\texttt{common/SystemBootstrapBanner.svelte} & Информационная плашка о неполной первичной настройке системы \\ \hline
+\texttt{common/\newline ModalConfirmacion.svelte} & Двухступенчатое подтверждение для разрушающих операций \\ \hline
+\texttt{common/SystemBootstrap\newline Banner.svelte} & Информационная плашка о неполной первичной настройке системы \\ \hline
 \end{xltabular}
 
 Компонент \texttt{Chart.svelte} реализован без использования специализированных библиотек построения графиков. Серии точек, поступающие с сервера, интерполируются по схеме Catmull-Rom, что позволяет получить плавную кривую без полиномиального переобучения. Размеры контейнера определяются динамически из родительского блока, благодаря чему график корректно адаптируется при изменении размеров окна.
@@ -427,7 +427,7 @@ function authHeaders(): HeadersInit {
 \centrow Уровень & \centrow Инструмент & \centrow Объекты тестирования \\ \hline
 \finishhead
 Модульный (\route{tests/Unit}) & PestPHP 4 & Сервисы предметной области, форматтеры сообщений, утилитные классы~--~в изоляции от базы данных и внешних подсистем \\ \hline
-Функциональный (\route{tests/Feature}) & PestPHP 4 + RefreshDatabase & Запросы к программному интерфейсу через тестовый клиент Laravel; база данных пересоздается перед каждым тестом для обеспечения независимости \\ \hline
+Функциональный (\route{tests/Feature}) & PestPHP 4 + Refresh\-Database &Запросы к программному интерфейсу через тестовый клиент Laravel; база данных пересоздается перед каждым тестом для обеспечения независимости \\ \hline
 Интеграционный (\route{tests/Feature/Mikrotik}) & PestPHP 4 + стенд & Тесты с подмененной клиентской библиотекой \texttt{routeros-api-php} и опциональные тесты с реальным маршрутизатором по флагу окружения \\ \hline
 Клиентский & Vitest 4 & Юнит-тесты компонентов Svelte, утилитных функций форматирования и хранилищ состояния \\ \hline
 \end{xltabular}

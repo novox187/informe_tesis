@@ -1,0 +1,74 @@
+- generic:
+  - generic [ref=e7]:
+    - generic [ref=e10]: Your trial period expires in 15 days
+    - generic [ref=e11] [cursor=pointer]: Purchase
+  - generic [ref=e18]:
+    - generic [ref=e21]:
+      - combobox [disabled] [ref=e22]
+      - textbox [disabled] [ref=e23]: 100%
+    - generic [ref=e26]:
+      - iframe [ref=e29]:
+        - generic [ref=f2e3]:
+          - generic [ref=f2e4] [cursor=pointer]: Get Started
+          - generic [ref=f2e5] [cursor=pointer]: My Projects
+      - iframe [active] [ref=e33]:
+        - generic [ref=f3e2]:
+          - generic [ref=f3e3]:
+            - generic [ref=f3e4]: Start a document
+            - generic [ref=f3e5]:
+              - generic "Letter - 8.5 × 11 in" [ref=f3e7] [cursor=pointer]:
+                - img "Letter" [ref=f3e8]
+                - generic [ref=f3e9]:
+                  - generic [ref=f3e10]: Letter
+                  - generic [ref=f3e11]: 8.5 × 11 in
+              - generic "A4 - 210 × 297 mm" [ref=f3e13] [cursor=pointer]:
+                - img "A4" [ref=f3e14]
+                - generic [ref=f3e15]:
+                  - generic [ref=f3e16]: A4
+                  - generic [ref=f3e17]: 210 × 297 mm
+              - generic "Web - 1024 × 768 px" [ref=f3e19] [cursor=pointer]:
+                - img "Web" [ref=f3e20]
+                - generic [ref=f3e21]:
+                  - generic [ref=f3e22]: Web
+                  - generic [ref=f3e23]: 1024 × 768 px
+              - generic "More..." [ref=f3e25] [cursor=pointer]:
+                - img "More..." [ref=f3e26]
+                - generic [ref=f3e28]: More...
+            - generic [ref=f3e29]:
+              - button "Open from this device..." [active] [ref=f3e31] [cursor=pointer]:
+                - img [ref=f3e32]
+                - generic [ref=f3e33]: Open from this device...
+              - button "Browse templates..." [ref=f3e35] [cursor=pointer]:
+                - img [ref=f3e36]
+                - generic [ref=f3e37]: Browse templates...
+          - generic [ref=f3e38]:
+            - generic [ref=f3e39]:
+              - generic [ref=f3e40]:
+                - generic "Recent Documents" [ref=f3e41]
+                - generic [ref=f3e42] [cursor=pointer]: View all
+              - generic [ref=f3e44]:
+                - img [ref=f3e45]
+                - paragraph [ref=f3e46]: No Cloud files yet. Save a document to the Corel Cloud to see it here.
+            - generic [ref=f3e47]:
+              - generic "Learn" [ref=f3e49]
+              - generic [ref=f3e50]:
+                - generic "AI Generate - Quick Tutorial | Beginner" [ref=f3e52] [cursor=pointer]:
+                  - img [ref=f3e54]
+                  - generic [ref=f3e55]:
+                    - generic [ref=f3e56]: AI Generate
+                    - generic [ref=f3e57]: Quick Tutorial | Beginner
+                - generic "AI-powered background remover - Quick Tutorial | Beginner" [ref=f3e59] [cursor=pointer]:
+                  - img [ref=f3e61]
+                  - generic [ref=f3e62]:
+                    - generic [ref=f3e63]: AI-powered background remover
+                    - generic [ref=f3e64]: Quick Tutorial | Beginner
+                - generic "Use vector curve tools - Practice Project | Beginner" [ref=f3e66] [cursor=pointer]:
+                  - img [ref=f3e68]
+                  - generic [ref=f3e69]:
+                    - generic [ref=f3e70]: Use vector curve tools
+                    - generic [ref=f3e71]: Practice Project | Beginner
+                - generic "Isolate objects using PowerClip - Quick Tutorial | Beginner" [ref=f3e73] [cursor=pointer]:
+                  - img [ref=f3e75]
+                  - generic [ref=f3e76]:
+                    - generic [ref=f3e77]: Isolate objects using PowerClip
+                    - generic [ref=f3e78]: Quick Tutorial | Beginner

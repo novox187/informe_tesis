@@ -1,10 +1,342 @@
 \appendix{Фрагменты исходного кода программы}
 
-main.tex
-\lstinputlisting[language=Tex, frame=none]{main.tex}
+В настоящем приложении приведены фрагменты исходного кода ключевых модулей серверной части разработанной системы (репозиторий \texttt{ispgestorserver}). Полный исходный код серверной части размещен в указанном репозитории, клиентской части~--~в репозитории \texttt{ispgestoradmin}.
 
-ТехПроект.tex
-\lstinputlisting[language=Tex, frame=none]{ТехПроект.tex}
+Фрагмент сервиса интеграции с маршрутизатором MikroTik (\texttt{app/Services/MikroTikService.php}):
+\begin{lstlisting}[language=PHP, firstnumber=1]
+<?php
+
+namespace App\Services;
+
+use RouterOS\Client;
+use RouterOS\Query;
+use Exception;
+use Illuminate\Support\Facades\Log;
+
+class MikroTikService
+{
+    protected $client;
+
+    public function __construct(?Client $client)
+    {
+        $this->client = $client;
+    }
+
+    public function runQuery(Query $query): array
+    {
+        if (!$this->client) {
+            return [];
+        }
+        return $this->client->query($query)->read();
+    }
+
+    // Agregar una IP a una address-list (p. ej. la lista 'morosos')
+    public function addIpToAddressList(string $ip, string $listName, string $comment = ''): array
+    {
+        if (!$this->client) {
+            return ['success' => false, 'message' => 'Cliente MikroTik no inicializado'];
+        }
+
+        try {
+            // Verificar si ya existe
+            $print = new Query('/ip/firewall/address-list/print');
+            $print->where('list', $listName);
+            $print->where('address', $ip);
+            $exists = $this->client->query($print)->read();
+
+            if (!empty($exists)) {
+                return ['success' => true, 'message' => 'La IP ya está en la lista', 'already_exists' => true];
+            }
+
+            $add = new Query('/ip/firewall/address-list/add');
+            $add->equal('list', $listName);
+            $add->equal('address', $ip);
+            if ($comment) {
+                $add->equal('comment', $comment);
+            }
+
+            $result = $this->client->query($add)->read();
+
+            if (isset($result['!trap'])) {
+                return ['success' => false, 'message' => $result['!trap'][0]['message'] ?? 'Error desconocido de MikroTik'];
+            }
+
+            return ['success' => true, 'message' => 'IP agregada a la lista correctamente'];
+        } catch (Exception $e) {
+            Log::error('MikroTik Add Address List Error: ' . $e->getMessage());
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+}
+\end{lstlisting}
+
+Фрагмент построения имени простой очереди абонента (\texttt{app/Services/MikroTikQueueSyncService.php}):
+\begin{lstlisting}[language=PHP, firstnumber=1]
+<?php
+
+namespace App\Services;
+
+use App\Models\Client;
+use Illuminate\Support\Facades\Log;
+
+class MikroTikQueueSyncService
+{
+    // Normaliza el nombre del abonado y le añade el documento de identidad
+    protected function normalizeClientQueueName(Client $client): string
+    {
+        $name = trim((string) ($client->full_name ?: 'cliente_' . $client->id));
+        $name = strtolower($name);
+        $name = preg_replace('/\s+/', '_', $name);
+        $name = preg_replace('/_+/', '_', $name);
+        $name = trim($name, '_');
+        $documentId = trim((string) ($client->document_id ?? ''));
+        if ($documentId !== '') {
+            return $name . '_' . $documentId;
+        }
+        return $name;
+    }
+
+    // Nombre final de la cola respetando el límite de RouterOS (64 caracteres)
+    protected function buildClientQueueName(Client $client): string
+    {
+        $raw = $this->normalizeClientQueueName($client);
+        $sanitized = strtolower($this->normalizeName($raw));
+        $documentId = trim((string) ($client->document_id ?? ''));
+
+        if ($documentId !== '' && str_ends_with($sanitized, '_' . $documentId)) {
+            $max = 64;
+            if (strlen($sanitized) <= $max) {
+                return $sanitized;
+            }
+
+            $suffix = '_' . $documentId;
+            $allowedBaseLen = max(1, $max - strlen($suffix));
+            $base = substr($sanitized, 0, $allowedBaseLen);
+            $base = rtrim($base, '_');
+            $final = $base . $suffix;
+
+            Log::warning('Client queue name truncated to fit RouterOS limits', [
+                'client_id' => $client->id,
+                'document_id' => $documentId,
+                'final' => $final,
+                'max_len' => $max,
+            ]);
+
+            return $final;
+        }
+
+        return $sanitized;
+    }
+}
+\end{lstlisting}
+
+Фрагмент сервиса приостановки и восстановления обслуживания (\texttt{app/Services/ClientSuspensionService.php}):
+\begin{lstlisting}[language=PHP, firstnumber=1]
+<?php
+
+namespace App\Services;
+
+use App\Models\Audit;
+use App\Models\Client;
+use App\Models\ClientPlan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class ClientSuspensionService
+{
+    public function __construct(
+        private readonly MikroTikService $mikrotik,
+        private readonly ClientWhitelistService $whitelist,
+    ) {}
+
+    // Reactivar el servicio de un cliente tras regularizar la deuda
+    public function reactivateClient(Client $client, string $reason): array
+    {
+        if (in_array(strtoupper($client->service_status), ['ACTIVE', 'ACTIVO'])) {
+            return ['success' => true, 'already_active' => true];
+        }
+
+        $mkResult = ['skipped' => 'no_ip'];
+
+        // Quitar la IP de la lista 'morosos' en el router
+        if ($client->ip) {
+            try {
+                $mkResult = $this->mikrotik->removeIpFromAddressList($client->ip, 'morosos');
+            } catch (\Throwable $e) {
+                Log::error("ClientSuspensionService: Excepción MikroTik cliente {$client->id}: " . $e->getMessage());
+                $mkResult = ['success' => false, 'error' => $e->getMessage()];
+            }
+        }
+
+        // El cambio de estado en BD se aplica dentro de una transacción
+        DB::transaction(function () use ($client, $reason, $mkResult) {
+            $oldStatus = $client->service_status;
+
+            $client->service_status = 'active';
+            $client->save();
+
+            ClientPlan::where('client_id', $client->id)
+                ->where('status', 'suspended')
+                ->update(['status' => 'active']);
+
+            Audit::create([
+                'table_name' => 'clients',
+                'operation'  => 'REACTIVATE_AUTO_OP',
+                'record_id'  => (string) $client->id,
+                'old_values' => ['service_status' => $oldStatus],
+                'new_values' => [
+                    'service_status'  => 'active',
+                    'reason'          => $reason,
+                    'mikrotik_list'   => 'morosos',
+                    'mikrotik_result' => $mkResult,
+                    'timestamp'       => now()->toIso8601String(),
+                ],
+                'user_id'    => null,
+                'ip_address' => '127.0.0.1',
+            ]);
+        });
+
+        Log::info("ClientSuspensionService: Cliente {$client->id} reactivado. Razón: {$reason}");
+
+        return ['success' => true, 'mikrotik' => $mkResult];
+    }
+}
+\end{lstlisting}
+
+Фрагмент сервиса автоматического биллинга (\texttt{app/Services/AutoBillingService.php}):
+\begin{lstlisting}[language=PHP, firstnumber=1]
+<?php
+
+namespace App\Services;
+
+use App\Models\Invoice;
+use Illuminate\Support\Facades\DB;
+
+class AutoBillingService
+{
+    // Ciclo completo: genera facturas y procesa los cobros pendientes
+    public function processCompleteBilling()
+    {
+        $results = [];
+
+        $results['invoices_generated'] = $this->generateMonthlyInvoices();
+        $paymentRun = $this->processAutoPayments();
+        $results['payments_processed'] = $paymentRun['processed'] ?? [];
+        $results['summary'] = $this->getBillingSummary();
+
+        return $results;
+    }
+
+    // Cobra una factura desde la wallet del abonado en una transacción
+    public function processInvoicePayment(Invoice $invoice)
+    {
+        return DB::transaction(function () use ($invoice) {
+            $client = $invoice->client;
+            $estadoAnterior = $invoice->status;
+
+            // Asegurar que el cliente tenga una wallet
+            if (!$client->wallet) {
+                $client->wallet()->create(['balance' => 0]);
+                $client->load('wallet');
+            }
+
+            $wallet = $client->wallet;
+
+            // Verificar saldo suficiente antes de cobrar
+            if ($wallet->balance < $invoice->total_amount) {
+                if ($invoice->status !== Invoice::STATUS_FAILED) {
+                    $invoice->update(['status' => Invoice::STATUS_FAILED]);
+                }
+
+                return [
+                    'success' => false,
+                    'error' => 'Saldo insuficiente',
+                    'previous_status' => $estadoAnterior,
+                ];
+            }
+
+            try {
+                $wallet->makePayment(
+                    $invoice->total_amount,
+                    "Pago automático - {$invoice->invoice_number}",
+                    "Pago de factura {$invoice->invoice_number}"
+                );
+
+                $transaction = $wallet->transactions()->latest()->first();
+
+                // Marcar la factura como pagada
+                $invoice->markAsPaid(Invoice::PAYMENT_WALLET, $transaction->reference);
+
+                return [
+                    'success' => true,
+                    'message' => 'Pago procesado exitosamente',
+                    'transaction_reference' => $transaction->reference,
+                    'paid_at' => now()->toDateTimeString(),
+                    'previous_status' => $estadoAnterior,
+                ];
+            } catch (\Exception $e) {
+                $invoice->update(['status' => Invoice::STATUS_FAILED]);
+
+                return [
+                    'success' => false,
+                    'error' => $e->getMessage(),
+                    'previous_status' => $estadoAnterior,
+                ];
+            }
+        });
+    }
+}
+\end{lstlisting}
+
+Фрагмент промежуточного обработчика проверки разрешений (\texttt{app/Http/Middleware/CheckPermission.php}):
+\begin{lstlisting}[language=PHP, firstnumber=1]
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class CheckPermission
+{
+    public function handle(Request $request, Closure $next, string $slug): Response
+    {
+        $employee = $request->user();
+
+        if (!$employee) {
+            return response()->json(['message' => 'No autenticado'], 401);
+        }
+
+        // Cargar rol y permisos si aún no están cargados
+        if (!$employee->relationLoaded('role')) {
+            $employee->load('role.permissions');
+        } elseif ($employee->role && !$employee->role->relationLoaded('permissions')) {
+            $employee->role->load('permissions');
+        }
+
+        // El rol super_admin omite toda comprobación de permisos
+        if ($employee->hasRole('super_admin')) {
+            return $next($request);
+        }
+
+        // El permiso 'acceso_total' también omite las comprobaciones específicas
+        if ($employee->hasPermission('acceso_total')) {
+            return $next($request);
+        }
+
+        // Comprobar el permiso específico requerido por la ruta
+        if (!$employee->hasPermission($slug)) {
+            return response()->json([
+                'message' => 'No tienes permiso para realizar esta acción.',
+                'required' => $slug,
+            ], 403);
+        }
+
+        return $next($request);
+    }
+}
+\end{lstlisting}
 
 \ifВКР{
 \newpage
