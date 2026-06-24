@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Защита ВКР — Веб-система управления интернет-провайдером</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===========================================================================
+   IRON LINK — Тема защиты ВКР
+   Тёмный «cyber-tech» стиль, отражающий реальный продукт (панель IRON LINK).
+   Меняйте переменные ниже, чтобы изменить весь облик презентации.
+   =========================================================================== */
+:root{
+  /* --- Палитра --- */
+  --stage-bg:#05070b;
+  --slide-bg:#080b11;
+  --panel:#0d1320;
+  --panel-2:#101a2b;
+  --blue:#4d8cff;
+  --blue-light:#7fb0ff;
+  --amber:#ff9d4d;
+  --green:#42d392;
+  --red:#ff6b6b;
+  --text:#e8eef7;
+  --muted:#a9bad4;
+  --hint:#6f819e;
+  --line:rgba(77,140,255,.18);
+  --line-soft:rgba(120,150,200,.12);
+
+  /* --- Типографика (авторский размер на сцене 1920×1080) --- */
+  --font-display:'Space Grotesk',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+
+  /* --- Анимация --- */
+  --ease:cubic-bezier(0.16,1,0.3,1);
+  --dur:0.7s;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* ===== БАЗА ФИКСИРОВАННОЙ СЦЕНЫ 16:9 (viewport-base.css, целиком) ===== */
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--stage-bg,#000);}
+.deck-viewport{position:fixed;inset:0;overflow:hidden;background:var(--stage-bg,#000);}
+.deck-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;background:var(--slide-bg,#fff);}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:block;visibility:hidden;opacity:0;pointer-events:none;background:var(--slide-bg,#fff);}
+.slide.active,.slide.visible{visibility:visible;opacity:1;pointer-events:auto;z-index:1;}
+img,video,canvas,svg{max-width:100%;max-height:100%;}
+.deck-controls{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:1000;}
+@media print{
+  html,body{width:1920px;height:auto;overflow:visible;background:#fff;}
+  .deck-viewport{position:static;overflow:visible;background:#fff;}
+  .deck-stage{position:static;width:auto;height:auto;transform:none!important;background:none;}
+  .slide{position:relative;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;width:1920px;height:1080px;break-after:page;page-break-after:always;}
+  .slide:last-child{break-after:auto;page-break-after:auto;}
+  .deck-controls{display:none!important;}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.2s!important;}
+}
+
+/* ===========================================================================
+   ОБЩИЙ ФОН СЛАЙДА: точечная сетка + мягкое свечение
+   =========================================================================== */
+.slide{
+  font-family:var(--font-display);color:var(--text);
+  background:
+    radial-gradient(900px 620px at 82% 18%, rgba(77,140,255,.10), transparent 60%),
+    radial-gradient(760px 560px at 12% 92%, rgba(255,157,77,.07), transparent 60%),
+    var(--slide-bg);
+}
+.slide::before{ /* точечная сетка */
+  content:'';position:absolute;inset:0;opacity:.55;pointer-events:none;
+  background-image:radial-gradient(rgba(120,150,200,.08) 1.3px, transparent 1.3px);
+  background-size:48px 48px;
+}
+.pad{position:absolute;inset:96px 130px 110px;}
+
+/* ===== ВЕРХНИЙ КОЛОНТИТУЛ СЛАЙДА (kicker + номер раздела) ===== */
+.head{display:flex;justify-content:space-between;align-items:center;}
+.kicker{
+  font-family:var(--font-mono);font-size:22px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--blue);display:inline-flex;align-items:center;gap:16px;
+}
+.kicker::before{content:'';width:54px;height:2px;background:var(--blue);}
+.snum{font-family:var(--font-mono);font-size:22px;color:var(--hint);letter-spacing:.15em;}
+.snum b{color:var(--text);}
+
+/* ===== ЗАГОЛОВКИ ===== */
+.h2{font-size:72px;line-height:1.05;font-weight:700;letter-spacing:-.02em;margin-top:30px;}
+.h2 .g{background:linear-gradient(100deg,var(--blue),var(--blue-light) 50%,var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.lead{font-family:var(--font-mono);font-size:27px;line-height:1.55;color:var(--muted);margin-top:26px;max-width:1180px;font-weight:400;}
+.lead b{color:var(--text);font-weight:500;}
+
+/* ===== РЕЙКЕР ДЛЯ ИЗОБРАЖЕНИЙ (chrome-рамка) ===== */
+.media{
+  border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel);
+  box-shadow:0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(77,140,255,.05);
+}
+.media .chrome{
+  height:46px;display:flex;align-items:center;gap:9px;padding:0 20px;
+  background:linear-gradient(180deg,#121a2b,#0c1320);border-bottom:1px solid var(--line);
+}
+.media .chrome i{width:12px;height:12px;border-radius:50%;background:#2c3a52;display:inline-block;}
+.media .chrome i:nth-child(1){background:#ff5f57;}
+.media .chrome i:nth-child(2){background:#febc2e;}
+.media .chrome i:nth-child(3){background:#28c840;}
+.media .chrome span{font-family:var(--font-mono);font-size:16px;color:var(--hint);margin-left:14px;letter-spacing:.08em;}
+.media.light{background:#f6f8fc;}
+.media.light .chrome{background:linear-gradient(180deg,#eef2f8,#e6ecf5);border-bottom:1px solid #d6deea;}
+.media.light .chrome span{color:#7a8aa3;}
+.media img{display:block;width:100%;height:auto;}
+.media.pad-img{padding:0;}
+.media.light .imgwrap{padding:26px;background:#fff;}
+
+/* ===== СПИСКИ ===== */
+.blist{list-style:none;display:flex;flex-direction:column;gap:22px;}
+.blist li{position:relative;padding-left:46px;font-size:28px;line-height:1.4;color:var(--muted);}
+.blist li b{color:var(--text);font-weight:600;}
+.blist li::before{
+  content:'';position:absolute;left:0;top:9px;width:20px;height:20px;border-radius:6px;
+  background:linear-gradient(135deg,var(--blue),var(--amber));
+  box-shadow:0 0 14px rgba(77,140,255,.5);
+}
+
+/* ===== КАРТОЧКИ / СТАТИСТИКА ===== */
+.cards{display:grid;gap:26px;}
+.card{
+  background:linear-gradient(180deg,rgba(18,26,43,.9),rgba(11,17,29,.9));
+  border:1px solid var(--line);border-radius:18px;padding:32px 34px;position:relative;overflow:hidden;
+}
+.card::after{content:'';position:absolute;left:0;top:0;width:100%;height:3px;
+  background:linear-gradient(90deg,var(--blue),var(--amber));opacity:.85;}
+.card .ic{font-family:var(--font-mono);font-size:20px;color:var(--blue);letter-spacing:.1em;}
+.card h3{font-size:30px;font-weight:600;margin:14px 0 10px;}
+.card p{font-size:22px;line-height:1.45;color:var(--muted);font-family:var(--font-mono);font-weight:400;}
+.card .num{font-size:60px;font-weight:700;line-height:1;
+  background:linear-gradient(120deg,var(--blue),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+.statrow{display:flex;gap:64px;flex-wrap:wrap;}
+.stat .num{font-size:74px;font-weight:700;line-height:1;
+  background:linear-gradient(120deg,var(--blue-light),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.stat .lbl{font-family:var(--font-mono);font-size:20px;color:var(--muted);letter-spacing:.08em;margin-top:12px;text-transform:uppercase;}
+
+/* чипы технологий */
+.chips{display:flex;gap:14px;flex-wrap:wrap;}
+.chip{font-family:var(--font-mono);font-size:19px;color:var(--blue-light);border:1px solid var(--line);
+  background:rgba(12,20,34,.6);padding:10px 18px;border-radius:9px;}
+.chip.amb{color:var(--amber);border-color:rgba(255,157,77,.4);}
+
+/* ===== СЕТКИ КОМПОНОВКИ ===== */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.cols.media-left{grid-template-columns:1.15fr .85fr;}
+.cols.narrow-text{grid-template-columns:1.35fr .65fr;}
+
+/* ===== АНИМАЦИИ РАСКРЫТИЯ ===== */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease);}
+.slide.visible .reveal{opacity:1;transform:translateY(0);}
+.slide.visible .reveal.d1{transition-delay:.10s}
+.slide.visible .reveal.d2{transition-delay:.20s}
+.slide.visible .reveal.d3{transition-delay:.32s}
+.slide.visible .reveal.d4{transition-delay:.44s}
+.slide.visible .reveal.d5{transition-delay:.56s}
+.slide.visible .reveal.d6{transition-delay:.68s}
+.slide.visible .reveal.d7{transition-delay:.80s}
+
+/* ===== НИЖНИЙ КОЛОНТИТУЛ (брендинг) ===== */
+.foot{position:absolute;left:130px;right:130px;bottom:46px;display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--font-mono);font-size:16px;color:var(--hint);letter-spacing:.1em;}
+.foot .brand{display:flex;align-items:center;gap:12px;}
+.foot .brand i{width:10px;height:10px;border-radius:3px;background:linear-gradient(135deg,var(--blue),var(--amber));}
+
+/* =========================== ТИТУЛЬНЫЙ СЛАЙД =========================== */
+.title-slide .badge{position:absolute;left:0;top:0;display:inline-flex;align-items:center;gap:14px;
+  font-family:var(--font-mono);font-size:20px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+  border:1px solid var(--line);padding:12px 22px;border-radius:999px;background:rgba(12,20,34,.6);}
+.title-slide .badge .dot{width:11px;height:11px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);}
+.title-net{position:absolute;right:-40px;top:0;width:900px;height:980px;}
+.edge{stroke:var(--blue);stroke-width:1.6;fill:none;opacity:.32;}
+.pulse{stroke:var(--blue-light);stroke-width:2.6;fill:none;stroke-linecap:round;stroke-dasharray:14 220;
+  filter:drop-shadow(0 0 6px rgba(77,140,255,.9));animation:dash 2.6s linear infinite;}
+.pulse.p2{animation-delay:.9s}.pulse.p3{animation-delay:1.7s}
+.node{fill:#0c1422;stroke:var(--blue);stroke-width:2;}
+.node.amb{stroke:var(--amber);}.ndot{fill:var(--blue);}.ndot.amb{fill:var(--amber);}
+@keyframes dash{to{stroke-dashoffset:-234;}}
+.title-slide h1{font-weight:700;font-size:92px;line-height:1.02;letter-spacing:-.02em;}
+.title-slide h1 .l{display:block;}
+.title-slide h1 .g{background:linear-gradient(100deg,var(--blue),var(--blue-light) 45%,var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+/* =========================== ФИНАЛЬНЫЙ СЛАЙД =========================== */
+.end h1{font-size:118px;font-weight:700;letter-spacing:-.02em;line-height:1.0;}
+.end .g{background:linear-gradient(100deg,var(--blue),var(--blue-light) 45%,var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+/* ===== УПРАВЛЕНИЕ / ПРОГРЕСС ===== */
+.progress{position:fixed;left:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--amber));z-index:1000;transition:width .4s var(--ease);box-shadow:0 0 12px rgba(77,140,255,.6);}
+.counter{position:fixed;right:24px;bottom:20px;font-family:var(--font-mono);font-size:16px;color:var(--hint);z-index:1000;letter-spacing:.1em;}
+.counter b{color:var(--text);}
+.hint{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;font-family:var(--font-mono);font-size:14px;color:var(--hint);z-index:1000;opacity:.5;}
+
+/* ===== РЕЖИМ РЕДАКТИРОВАНИЯ ===== */
+.edit-hotzone{position:fixed;top:0;left:0;width:80px;height:80px;z-index:10000;cursor:pointer;}
+.edit-toggle{position:fixed;top:18px;left:18px;width:48px;height:48px;border-radius:12px;border:1px solid var(--line);
+  background:var(--panel);color:var(--text);font-size:20px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .3s;z-index:10001;}
+.edit-toggle.show,.edit-toggle.active{opacity:1;pointer-events:auto;}
+.edit-toggle.active{background:var(--blue);color:#06101f;}
+[contenteditable="true"]{outline:2px dashed rgba(77,140,255,.6);outline-offset:6px;border-radius:6px;cursor:text;}
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+  <main class="deck-stage" id="deckStage">
+
+    <!-- ============================ 01 · ТИТУЛ ============================ -->
+    <section class="slide title-slide active">
+      <div class="pad">
+
+        <!-- Шапка: эмблема + университет + город/год -->
+        <div class="reveal d1" style="position:absolute;left:0;top:0;right:0;display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:24px;">
+            <!-- Эмблема ЮЗГУ. Чтобы поставить золотой герб, положите Gerb2010_korona.svg
+                 в images/ и замените src на images/Gerb2010_korona.svg -->
+            <div style="width:80px;height:66px;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:2px;">
+              <img src="images/escudo-swsu.svg" alt="Логотип ЮЗГУ" style="height:100%;width:auto;display:block;">
+            </div>
+            <div>
+              <div style="font-size:30px;font-weight:600;letter-spacing:-.01em;">Юго-Западный государственный университет</div>
+              <div style="font-family:var(--font-mono);font-size:18px;letter-spacing:.22em;text-transform:uppercase;color:var(--hint);margin-top:6px;">Кафедра программной инженерии</div>
+            </div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:22px;letter-spacing:.18em;color:var(--muted);">КУРСК · 2026</div>
+        </div>
+
+        <!-- Левый блок: тема, автор, руководитель -->
+        <div style="position:absolute;left:0;top:286px;max-width:1045px;">
+          <div class="kicker reveal d2" style="margin-bottom:26px;">Дипломный проект · 09.03.04</div>
+          <h1 class="reveal d3" style="font-size:62px;line-height:1.1;font-weight:700;letter-spacing:-.02em;">Веб-система для автоматизированного управления клиентами интернет-провайдера на базе&nbsp;MikroTik</h1>
+        </div>
+        <div class="reveal d6" style="position:absolute;left:0;bottom:150px;display:flex;gap:46px;align-items:flex-start;">
+            <div>
+              <div style="font-family:var(--font-mono);font-size:16px;letter-spacing:.2em;text-transform:uppercase;color:var(--hint)">Автор</div>
+              <div style="font-size:30px;font-weight:600;margin-top:10px;">Очоа Самбрано Х. Ф.</div>
+              <div style="font-family:var(--font-mono);font-size:18px;color:var(--muted);margin-top:6px;">группа ПО-22б</div>
+            </div>
+            <div style="width:1px;align-self:stretch;background:var(--line);"></div>
+            <div>
+              <div style="font-family:var(--font-mono);font-size:16px;letter-spacing:.2em;text-transform:uppercase;color:var(--hint)">Руководитель</div>
+              <div style="font-size:30px;font-weight:600;margin-top:10px;">Сизов А. С.</div>
+              <div style="font-family:var(--font-mono);font-size:18px;color:var(--muted);margin-top:6px;">канд. техн. наук</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Правый блок: ЖИВАЯ «шина данных» КЛИЕНТ ↕ СЕРВЕР ↓ СЕТЬ -->
+        <style>
+          /* Пульсирующие кольца вокруг узлов */
+          @keyframes archRing{0%{r:42px;opacity:.55}100%{r:96px;opacity:0}}
+          .arch-ring{animation:archRing 3s ease-out infinite;transform-box:fill-box;}
+          .arch-ring.r2{animation-delay:1.5s}
+          /* Свечение энергии вдоль шины */
+          @keyframes archFlow{to{stroke-dashoffset:-260}}
+          .arch-flow{animation:archFlow 3s linear infinite;}
+          /* Мягкое дыхание ядра узла */
+          @keyframes archBreath{0%,100%{opacity:.9}50%{opacity:.45}}
+          .arch-core{animation:archBreath 2.6s ease-in-out infinite;}
+          .arch-label{position:absolute;left:170px;}
+          .arch-tag{font-family:var(--font-mono);font-size:16px;letter-spacing:.2em;text-transform:uppercase;}
+          .arch-val{font-size:27px;font-weight:600;margin-top:7px;color:var(--text);}
+          .arch-proto{position:absolute;left:170px;font-family:var(--font-mono);font-size:16px;letter-spacing:.06em;display:flex;align-items:center;gap:12px;}
+          .arch-proto .ar{font-size:21px;}
+        </style>
+        <div class="reveal d5" style="position:absolute;right:0;top:300px;width:600px;height:520px;">
+          <svg viewBox="0 0 600 520" width="600" height="520" style="position:absolute;left:0;top:0;overflow:visible;" aria-hidden="true">
+            <defs>
+              <linearGradient id="spine" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#4d8cff"/><stop offset="55%" stop-color="#4d8cff"/><stop offset="100%" stop-color="#ff9d4d"/>
+              </linearGradient>
+              <radialGradient id="nodeFill"><stop offset="0" stop-color="#13203a"/><stop offset="100%" stop-color="#0a1020"/></radialGradient>
+            </defs>
+
+            <!-- ШИНА: базовая линия + бегущая энергия -->
+            <path d="M96,74 L96,446" stroke="url(#spine)" stroke-width="3" fill="none" opacity=".45" stroke-linecap="round"/>
+            <path class="arch-flow" d="M96,74 L96,446" stroke="#9fc2ff" stroke-width="3" fill="none"
+                  stroke-linecap="round" stroke-dasharray="16 244" filter="drop-shadow(0 0 6px rgba(120,170,255,.9))"/>
+
+            <!-- ПУЛЬСИРУЮЩИЕ КОЛЬЦА -->
+            <circle class="arch-ring"    cx="96" cy="74"  r="42" fill="none" stroke="#4d8cff" stroke-width="1.5"/>
+            <circle class="arch-ring r2" cx="96" cy="74"  r="42" fill="none" stroke="#4d8cff" stroke-width="1.5"/>
+            <circle class="arch-ring"    cx="96" cy="260" r="42" fill="none" stroke="#4d8cff" stroke-width="1.5"/>
+            <circle class="arch-ring r2" cx="96" cy="260" r="42" fill="none" stroke="#4d8cff" stroke-width="1.5"/>
+            <circle class="arch-ring"    cx="96" cy="446" r="42" fill="none" stroke="#ff9d4d" stroke-width="1.5"/>
+            <circle class="arch-ring r2" cx="96" cy="446" r="42" fill="none" stroke="#ff9d4d" stroke-width="1.5"/>
+
+            <!-- УЗЕЛ КЛИЕНТ -->
+            <g>
+              <circle cx="96" cy="74" r="34" fill="url(#nodeFill)" stroke="#4d8cff" stroke-width="2"/>
+              <circle class="arch-core" cx="96" cy="74" r="34" fill="#4d8cff" opacity=".12"/>
+              <rect x="78" y="60" width="36" height="28" rx="5" fill="none" stroke="#cfe0ff" stroke-width="2"/>
+              <line x1="78" y1="69" x2="114" y2="69" stroke="#cfe0ff" stroke-width="2"/>
+              <circle cx="84" cy="64.5" r="1.5" fill="#cfe0ff"/><circle cx="89.5" cy="64.5" r="1.5" fill="#cfe0ff"/>
+            </g>
+            <!-- УЗЕЛ СЕРВЕР -->
+            <g>
+              <circle cx="96" cy="260" r="38" fill="url(#nodeFill)" stroke="#4d8cff" stroke-width="2"/>
+              <circle class="arch-core" cx="96" cy="260" r="38" fill="#4d8cff" opacity=".14"/>
+              <ellipse cx="96" cy="247" rx="18" ry="6" fill="none" stroke="#cfe0ff" stroke-width="2"/>
+              <path d="M78,247 V273 a18,6 0 0 0 36,0 V247" fill="none" stroke="#cfe0ff" stroke-width="2"/>
+              <path d="M78,260 a18,6 0 0 0 36,0" fill="none" stroke="#cfe0ff" stroke-width="2"/>
+            </g>
+            <!-- УЗЕЛ СЕТЬ -->
+            <g>
+              <circle cx="96" cy="446" r="34" fill="url(#nodeFill)" stroke="#ff9d4d" stroke-width="2"/>
+              <circle class="arch-core" cx="96" cy="446" r="34" fill="#ff9d4d" opacity=".12"/>
+              <line x1="96" y1="446" x2="96" y2="432" stroke="#ffd9b0" stroke-width="2"/>
+              <line x1="96" y1="446" x2="83" y2="456" stroke="#ffd9b0" stroke-width="2"/>
+              <line x1="96" y1="446" x2="109" y2="456" stroke="#ffd9b0" stroke-width="2"/>
+              <circle cx="96" cy="446" r="3.6" fill="#ffd9b0"/>
+              <circle cx="96" cy="430" r="3.4" fill="none" stroke="#ffd9b0" stroke-width="2"/>
+              <circle cx="82" cy="458" r="3.4" fill="none" stroke="#ffd9b0" stroke-width="2"/>
+              <circle cx="110" cy="458" r="3.4" fill="none" stroke="#ffd9b0" stroke-width="2"/>
+            </g>
+
+            <!-- ПАКЕТЫ ДАННЫХ (анимация движения) -->
+            <!-- клиент → сервер (REST, вниз) -->
+            <circle r="5" fill="#7fb0ff" filter="drop-shadow(0 0 5px #4d8cff)">
+              <animateMotion dur="1.9s" repeatCount="indefinite" path="M96,74 L96,260"/>
+            </circle>
+            <circle r="4" fill="#7fb0ff" filter="drop-shadow(0 0 5px #4d8cff)">
+              <animateMotion dur="1.9s" begin="0.95s" repeatCount="indefinite" path="M96,74 L96,260"/>
+            </circle>
+            <!-- сервер → клиент (WebSocket, вверх) -->
+            <circle r="4" fill="#cfe0ff" filter="drop-shadow(0 0 5px #4d8cff)">
+              <animateMotion dur="2.4s" begin="0.5s" repeatCount="indefinite" path="M96,260 L96,74"/>
+            </circle>
+            <!-- сервер → сеть (RouterOS API, вниз) -->
+            <circle r="5" fill="#ffb877" filter="drop-shadow(0 0 5px #ff9d4d)">
+              <animateMotion dur="1.7s" repeatCount="indefinite" path="M96,260 L96,446"/>
+            </circle>
+            <circle r="4" fill="#ffb877" filter="drop-shadow(0 0 5px #ff9d4d)">
+              <animateMotion dur="1.7s" begin="0.85s" repeatCount="indefinite" path="M96,260 L96,446"/>
+            </circle>
+          </svg>
+
+          <!-- ТЕКСТОВЫЕ ПОДПИСИ (поверх SVG) -->
+          <div class="arch-label" style="top:48px;"><div class="arch-tag" style="color:var(--blue)">Клиент</div><div class="arch-val">SvelteKit 5 · SPA</div></div>
+          <div class="arch-proto" style="top:158px;color:var(--blue)">REST · WebSocket<span class="ar">↕</span></div>
+          <div class="arch-label" style="top:234px;"><div class="arch-tag" style="color:var(--blue)">Сервер</div><div class="arch-val">Laravel 12 · REST API</div></div>
+          <div class="arch-proto" style="top:344px;color:var(--amber)">RouterOS API<span class="ar">↓</span></div>
+          <div class="arch-label" style="top:420px;"><div class="arch-tag" style="color:var(--amber)">Сеть</div><div class="arch-val">MikroTik · RouterOS</div></div>
+        </div>
+
+        <!-- Технологический стек -->
+        <div class="reveal d7 chips" style="position:absolute;left:0;bottom:64px;">
+          <span class="chip">Laravel 12</span><span class="chip">SvelteKit 5</span><span class="chip">MySQL 8</span>
+          <span class="chip">Sanctum</span><span class="chip">Reverb · WS</span><span class="chip amb">RouterOS API</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ 02 · ПРОБЛЕМА ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Актуальность</span><span class="snum reveal d1"><b>02</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Рутина оператора — в&nbsp;<span class="g">разрозненных</span> инструментах</h2>
+        <div class="cols narrow-text" style="margin-top:56px;align-items:flex-start;">
+          <div>
+            <!-- CSS-диаграмма «было»: 4 инструмента → хаос -->
+            <div class="reveal d3" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;">
+              <div class="card" style="padding:26px 22px;"><div class="ic">01</div><h3 style="font-size:24px;margin:10px 0 6px;">Банк-клиент</h3><p style="font-size:18px;">контроль платежей</p></div>
+              <div class="card" style="padding:26px 22px;"><div class="ic">02</div><h3 style="font-size:24px;margin:10px 0 6px;">Таблицы Excel</h3><p style="font-size:18px;">учёт абонентов</p></div>
+              <div class="card" style="padding:26px 22px;"><div class="ic">03</div><h3 style="font-size:24px;margin:10px 0 6px;">Web-интерфейс роутера</h3><p style="font-size:18px;">сетевые ограничения</p></div>
+              <div class="card" style="padding:26px 22px;"><div class="ic">04</div><h3 style="font-size:24px;margin:10px 0 6px;">Мессенджер</h3><p style="font-size:18px;">связь с абонентом</p></div>
+            </div>
+            <div class="reveal d4" style="text-align:center;font-family:var(--font-mono);color:var(--blue);font-size:30px;margin:22px 0;">↓ &nbsp; ручное согласование &nbsp; ↓</div>
+            <div class="reveal d5 card" style="border-color:rgba(255,107,107,.45);">
+              <div class="ic" style="color:var(--red)">РЕЗУЛЬТАТ БЕЗ АВТОМАТИЗАЦИИ</div>
+              <h3 style="margin-top:14px;">Рассогласование данных · задержки реакции · потери рабочего времени</h3>
+            </div>
+          </div>
+          <ul class="blist reveal d6">
+            <li><b>Множество локальных ИП</b> — от сотен до десятков тысяч абонентов</li>
+            <li>Чем больше абонентов на сотрудника, тем <b>дешевле поддержка</b></li>
+            <li>MikroTik занимает <b>большую долю</b> у малых и средних ИП</li>
+            <li>RouterOS API открывает путь к <b>автоматическому согласованию</b> тарифов с сетью</li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 1 — Анализ предметной области</span></div>
+    </section>
+
+    <!-- ============================ 03 · ЦЕЛЬ И ЗАДАЧИ ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Цель и задачи</span><span class="snum reveal d1"><b>03</b> / 15</span></div>
+        <div class="cols narrow-text" style="margin-top:40px;align-items:flex-start;">
+          <div>
+            <div class="reveal d2 card" style="border-color:rgba(77,140,255,.5);">
+              <div class="ic">ЦЕЛЬ РАБОТЫ</div>
+              <h3 style="font-size:40px;line-height:1.2;margin-top:16px;font-weight:600;">Разработать веб-систему управления клиентами ИП, интегрированную с MikroTik и <span class="g" style="background:linear-gradient(100deg,var(--blue),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent;">снижающую трудозатраты</span> на рутинные операции.</h3>
+            </div>
+            <div class="statrow reveal d3" style="margin-top:40px;">
+              <div class="stat"><div class="num">8</div><div class="lbl">задач разработки</div></div>
+              <div class="stat"><div class="num">4</div><div class="lbl">раздела работы</div></div>
+              <div class="stat"><div class="num">2</div><div class="lbl">части системы</div></div>
+            </div>
+          </div>
+          <ul class="blist reveal d4" style="gap:18px;">
+            <li>Анализ области и <b>обзор аналогов</b></li>
+            <li>Формирование <b>требований</b></li>
+            <li>Проектирование <b>архитектуры и БД</b></li>
+            <li>Разработка <b>REST API</b></li>
+            <li>Интеграция с <b>MikroTik</b></li>
+            <li>Автоматический <b>биллинг</b></li>
+            <li>Подсистема <b>техподдержки</b></li>
+            <li><b>Тестирование</b> системы</li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Введение — Цель и задачи</span></div>
+    </section>
+
+    <!-- ============================ 04 · ПОЧЕМУ СВОЁ РЕШЕНИЕ ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Обзор рынка</span><span class="snum reveal d1"><b>04</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Проанализировано <span class="g">8&nbsp;систем</span> — почему нужна своя</h2>
+        <p class="lead reveal d2">Сравнение существующих систем биллинга и управления абонентами показало системные ограничения для малого ИП.</p>
+        <div class="cards reveal d3" style="grid-template-columns:repeat(3,1fr);margin-top:56px;">
+          <div class="card"><div class="ic">ОГРАНИЧЕНИЕ 01</div><h3>Масштаб</h3><p>Рассчитаны на крупного оператора — избыточны и дороги для малого ИП.</p></div>
+          <div class="card"><div class="ic">ОГРАНИЧЕНИЕ 02</div><h3>Доступность</h3><p>Ряд решений недоступен, закрыт или более не поддерживается.</p></div>
+          <div class="card"><div class="ic">ОГРАНИЧЕНИЕ 03</div><h3>Адаптация</h3><p>Требуют значительной доработки под конкретного провайдера.</p></div>
+        </div>
+        <div class="reveal d4 card" style="margin-top:34px;border-color:rgba(66,211,146,.45);">
+          <div class="ic" style="color:var(--green)">ВЫВОД</div>
+          <h3 style="margin-top:10px;">Недорогая собственная разработка, закрывающая основной поток рутины <b>без выделенного штата администраторов</b>.</h3>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 1 — Сравнительный анализ</span></div>
+    </section>
+
+    <!-- ============================ 05 · РОЛИ / ДЕЙСТВУЮЩИЕ ЛИЦА ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Техническое задание</span><span class="snum reveal d1"><b>05</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Действующие лица и <span class="g">разграничение доступа</span></h2>
+        <div class="cols media-left" style="margin-top:40px;">
+          <div class="reveal d3 media light">
+            <div class="chrome"><i></i><i></i><i></i><span>UML · диаграмма ролей (наследование)</span></div>
+            <div class="imgwrap"><img src="images/diagrama_2_1.png" alt="Иерархия ролей сотрудников"></div>
+          </div>
+          <div>
+            <ul class="blist reveal d4">
+              <li><b>20 функциональных требований</b> формализовано</li>
+              <li>Модель прецедентов UML для <b>6 категорий лиц</b></li>
+              <li>Ролевая модель на основе разрешений <b>«модуль.действие»</b></li>
+              <li>Требования к <b>надёжности и безопасности</b></li>
+            </ul>
+            <div class="reveal d5 chips" style="margin-top:34px;">
+              <span class="chip">Оператор</span><span class="chip">Финансист</span><span class="chip">Сетевой админ</span><span class="chip amb">Суперадмин</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 2 — Моделирование требований</span></div>
+    </section>
+
+    <!-- ============================ 06 · АРХИТЕКТУРА РАЗВЁРТЫВАНИЯ ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Технический проект</span><span class="snum reveal d1"><b>06</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Архитектура <span class="g">развёртывания</span> системы</h2>
+        <div class="reveal d3 media light" style="margin:28px auto 0;width:1560px;">
+          <div class="chrome"><i></i><i></i><i></i><span>Диаграмма развёртывания — клиент · сервер · внешние сервисы</span></div>
+          <div style="height:520px;display:flex;align-items:center;justify-content:center;background:#fff;padding:18px 26px;">
+            <img src="images/diagrama_3_1.png" alt="Диаграмма развёртывания системы" style="max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain;display:block;">
+          </div>
+        </div>
+        <div class="reveal d4 chips" style="margin-top:26px;justify-content:center;">
+          <span class="chip">Nginx</span><span class="chip">PHP-FPM · Laravel 12</span><span class="chip">Scheduler (cron)</span>
+          <span class="chip">Worker · queue:work</span><span class="chip">Laravel Reverb · WSS</span><span class="chip amb">RouterOS API</span><span class="chip amb">Cloudinary</span>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 3 — Архитектурное построение</span></div>
+    </section>
+
+    <!-- ============================ 07 · МНОГОУРОВНЕВАЯ АРХИТЕКТУРА ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Технический проект</span><span class="snum reveal d1"><b>07</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Пять <span class="g">уровней ответственности</span></h2>
+        <div class="cols" style="grid-template-columns:.62fr 1.38fr;margin-top:34px;align-items:center;">
+          <div class="reveal d3 media light" style="max-width:430px;">
+            <div class="chrome"><i></i><i></i><i></i><span>Слои</span></div>
+            <div class="imgwrap" style="padding:14px;"><img src="images/diagrama_3_2.png" alt="Многоуровневая архитектура" style="max-height:560px;width:auto;margin:0 auto;"></div>
+          </div>
+          <div class="cards reveal d4" style="grid-template-columns:1fr 1fr;gap:20px;">
+            <div class="card" style="padding:24px 28px;"><div class="ic">КЛИЕНТ</div><h3 style="font-size:25px;margin:8px 0 4px;">Представление</h3><p style="font-size:18px;">Svelte-компоненты, SvelteKit</p></div>
+            <div class="card" style="padding:24px 28px;"><div class="ic">КЛИЕНТ</div><h3 style="font-size:25px;margin:8px 0 4px;">Обмен</h3><p style="font-size:18px;">fetch + Bearer, Laravel Echo</p></div>
+            <div class="card" style="padding:24px 28px;"><div class="ic">СЕРВЕР</div><h3 style="font-size:25px;margin:8px 0 4px;">Прогр. интерфейс</h3><p style="font-size:18px;">Маршруты, контроллеры, Resources</p></div>
+            <div class="card" style="padding:24px 28px;"><div class="ic">СЕРВЕР</div><h3 style="font-size:25px;margin:8px 0 4px;">Бизнес-логика</h3><p style="font-size:18px;">Services, Jobs, Events, права</p></div>
+            <div class="card" style="padding:24px 28px;"><div class="ic">СЕРВЕР</div><h3 style="font-size:25px;margin:8px 0 4px;">Доступ к данным</h3><p style="font-size:18px;">Eloquent, миграции</p></div>
+            <div class="card" style="padding:24px 28px;border-color:rgba(255,157,77,.4);"><div class="ic" style="color:var(--amber)">ХРАНИЛИЩЕ</div><h3 style="font-size:25px;margin:8px 0 4px;">Хранение</h3><p style="font-size:18px;">MySQL · индексы · журнал</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 3 — Многоуровневая архитектура</span></div>
+    </section>
+
+    <!-- ============================ 08 · БАЗА ДАННЫХ ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Технический проект</span><span class="snum reveal d1"><b>08</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Реляционная база данных — <span class="g">3НФ</span></h2>
+        <div class="cols media-left" style="margin-top:34px;">
+          <div class="reveal d3 media light">
+            <div class="chrome"><i></i><i></i><i></i><span>ER-диаграмма — 32 таблицы</span></div>
+            <div class="imgwrap" style="padding:18px;"><img src="images/diagrama_db.png" alt="Схема базы данных"></div>
+          </div>
+          <div>
+            <div class="statrow reveal d4" style="gap:48px;">
+              <div class="stat"><div class="num">32</div><div class="lbl">таблицы</div></div>
+              <div class="stat"><div class="num">6</div><div class="lbl">подсистем</div></div>
+            </div>
+            <ul class="blist reveal d5" style="margin-top:36px;">
+              <li>Абоненты · финансы · поддержка · доступ · инфраструктура · конфигурация</li>
+              <li><b>Аудит изменений</b> и мягкое удаление</li>
+              <li><b>Фискальные снимки</b> на момент выпуска документов</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 3 — Проектирование БД</span></div>
+    </section>
+
+    <!-- ============================ 09 · REST API ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Технический проект</span><span class="snum reveal d1"><b>09</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Программный интерфейс в стиле <span class="g">REST</span></h2>
+        <div class="cols" style="margin-top:40px;align-items:center;">
+          <div class="reveal d3 media">
+            <div class="chrome"><i></i><i></i><i></i><span>routes/api.php</span></div>
+            <div style="padding:30px 34px;font-family:var(--font-mono);font-size:21px;line-height:2.0;background:#0a1018;">
+              <div><span style="color:var(--green)">GET</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--muted)">/api/clients</span></div>
+              <div><span style="color:var(--amber)">POST</span>&nbsp;&nbsp;&nbsp;<span style="color:var(--muted)">/api/clients/{id}/invoices</span></div>
+              <div><span style="color:var(--blue)">PATCH</span>&nbsp;&nbsp;<span style="color:var(--muted)">/api/clients/{id}/suspend</span></div>
+              <div><span style="color:var(--green)">GET</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--muted)">/api/mikrotik/firewall</span></div>
+              <div><span style="color:var(--blue)">PUT</span>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--muted)">/api/plans/{id}/sync-queue</span></div>
+              <div style="margin-top:14px;color:var(--hint);font-size:17px;">// единый формат ответа · JSON</div>
+              <div style="color:var(--hint);font-size:17px;">// доступ: permission «module.action»</div>
+            </div>
+          </div>
+          <div>
+            <div class="statrow reveal d4">
+              <div class="stat"><div class="num">70+</div><div class="lbl">конечных точек</div></div>
+            </div>
+            <ul class="blist reveal d5" style="margin-top:34px;">
+              <li>Группировка <b>по ресурсам</b>, единый формат JSON</li>
+              <li>Ролевая модель <b>«модуль.действие»</b></li>
+              <li><b>Сквозная журнализация</b> изменений</li>
+              <li>Аутентификация <b>Laravel Sanctum</b> (Bearer-токены)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 3 — Проектирование API</span></div>
+    </section>
+
+    <!-- ============================ 10 · ИНТЕГРАЦИЯ MIKROTIK ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Ключевая подсистема</span><span class="snum reveal d1"><b>10</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Интеграция с <span class="g">MikroTik</span> по RouterOS API</h2>
+        <div class="cols media-left" style="margin-top:36px;">
+          <div class="reveal d3 media">
+            <div class="chrome"><i></i><i></i><i></i><span>IRON LINK · MikroTik / Firewall</span></div>
+            <img src="images/CortaFuegos.png" alt="Управление правилами брандмауэра MikroTik">
+          </div>
+          <ul class="blist reveal d4">
+            <li><b>Простые очереди</b> ↔ тарифные планы абонентов</li>
+            <li>Правила <b>брандмауэра</b> со снимками и откатом</li>
+            <li><b>Анализ конфликтов</b> правил (shadowing)</li>
+            <li>Мониторинг <b>беспроводных абонентов</b></li>
+            <li>Проверено на <b>реальном маршрутизаторе</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 4 — Подсистема интеграции</span></div>
+    </section>
+
+    <!-- ============================ 11 · АВТОМАТИЧЕСКИЙ БИЛЛИНГ ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Ключевая подсистема</span><span class="snum reveal d1"><b>11</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Автоматический <span class="g">биллинг</span> по расписанию</h2>
+        <div class="cols" style="grid-template-columns:1fr 1.05fr;margin-top:34px;align-items:center;">
+          <div>
+            <!-- поток автоматизации -->
+            <div class="reveal d3" style="display:flex;flex-direction:column;gap:16px;">
+              <div class="card" style="padding:22px 28px;"><div class="ic">SCHEDULER · cron</div><h3 style="font-size:25px;margin-top:6px;">Запуск фоновых задач по расписанию</h3></div>
+              <div style="text-align:center;color:var(--blue);font-family:var(--font-mono);font-size:26px;">↓</div>
+              <div class="card" style="padding:22px 28px;"><div class="ic">WORKER · queue:work</div><h3 style="font-size:25px;margin-top:6px;">Генерация счетов → приостановка → восстановление</h3></div>
+            </div>
+            <ul class="blist reveal d4" style="margin-top:30px;gap:16px;">
+              <li>Автосписание из <b>кошелька абонента</b></li>
+              <li><b>Льготный период</b> до приостановки</li>
+              <li>Настройка <b>без правки кода</b> (таблица настроек)</li>
+            </ul>
+          </div>
+          <div class="reveal d5 media">
+            <div class="chrome"><i></i><i></i><i></i><span>IRON LINK · Планировщик задач</span></div>
+            <img src="images/Colas.png" alt="Планировщик: генерация счетов и синхронизация очередей">
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 4 — Подсистема биллинга</span></div>
+    </section>
+
+    <!-- ============================ 12 · ДЕМО ПАНЕЛИ ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Рабочий проект</span><span class="snum reveal d1"><b>12</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Панель администрирования — <span class="g">единое окно</span></h2>
+        <div class="reveal d3 media" style="margin:26px auto 0;width:900px;">
+          <div class="chrome"><i></i><i></i><i></i><span>IRON LINK · Dashboard</span></div>
+          <div style="height:560px;display:flex;align-items:center;justify-content:center;background:#080b11;">
+            <img src="images/Dashboard.png" alt="Главная панель администрирования IRON LINK" style="max-height:100%;max-width:100%;width:auto;height:auto;object-fit:contain;display:block;">
+          </div>
+        </div>
+        <div class="reveal d4 chips" style="margin-top:28px;justify-content:center;">
+          <span class="chip">Финансовая сводка</span><span class="chip">Активные абоненты</span><span class="chip">Топ-должники</span><span class="chip amb">Статус роутера в реальном времени</span>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 4 — Контрольный пример</span></div>
+    </section>
+
+    <!-- ============================ 13 · ТЕХПОДДЕРЖКА ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Рабочий проект</span><span class="snum reveal d1"><b>13</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Подсистема <span class="g">технической поддержки</span></h2>
+        <div class="cols media-left" style="margin-top:36px;">
+          <div class="reveal d3 media">
+            <div class="chrome"><i></i><i></i><i></i><span>IRON LINK · Клиенты / Обращения</span></div>
+            <img src="images/SoporteTecnico.png" alt="Подсистема техподдержки и переписки">
+          </div>
+          <ul class="blist reveal d4">
+            <li>Регистрация обращений <b>со слов абонента</b></li>
+            <li><b>Внутренняя переписка</b> сотрудников по обращению</li>
+            <li>Вложения через облако <b>Cloudinary</b></li>
+            <li><b>Оценка качества</b> обслуживания (CSAT)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 4 — Подсистема поддержки</span></div>
+    </section>
+
+    <!-- ============================ 14 · ТЕСТИРОВАНИЕ И РЕЗУЛЬТАТЫ ============================ -->
+    <section class="slide">
+      <div class="pad">
+        <div class="head"><span class="kicker reveal d1">Результаты</span><span class="snum reveal d1"><b>14</b> / 15</span></div>
+        <h2 class="h2 reveal d2">Тестирование и <span class="g">итоговые результаты</span></h2>
+        <div class="cards reveal d3" style="grid-template-columns:repeat(4,1fr);margin-top:50px;">
+          <div class="card"><div class="num">20 / 20</div><p style="margin-top:14px;">требований ТЗ реализовано полностью</p></div>
+          <div class="card"><div class="num">70+</div><p style="margin-top:14px;">конечных точек REST API</p></div>
+          <div class="card"><div class="num">32</div><p style="margin-top:14px;">таблицы БД в 3НФ</p></div>
+          <div class="card"><div class="num">3</div><p style="margin-top:14px;">вида тестирования пройдено</p></div>
+        </div>
+        <ul class="blist reveal d4" style="margin-top:44px;">
+          <li><b>Модульное, интеграционное и системное</b> тестирование выполнено</li>
+          <li>Проверено взаимодействие с <b>реальным маршрутизатором MikroTik</b> в стендовых условиях</li>
+          <li>Система <b>готова к опытной эксплуатации</b> в ИП до нескольких тысяч подключений</li>
+        </ul>
+      </div>
+      <div class="foot"><span class="brand"><i></i>IRON LINK · Веб-система управления ИП</span><span>Раздел 4 — Тестирование</span></div>
+    </section>
+
+    <!-- ============================ 15 · ЗАКЛЮЧЕНИЕ / ВОПРОСЫ ============================ -->
+    <section class="slide end">
+      <div class="pad" style="display:flex;flex-direction:column;justify-content:center;">
+        <div class="kicker reveal d1" style="margin-bottom:30px;">Заключение · перспективы развития</div>
+        <h1 class="reveal d2">Спасибо <span class="g">за внимание</span></h1>
+        <p class="lead reveal d3" style="margin-top:30px;font-size:30px;">Цель достигнута: все задачи решены, все требования ТЗ выполнены. Готов ответить на ваши <b>вопросы</b>.</p>
+        <div class="cards reveal d4" style="grid-template-columns:repeat(4,1fr);margin-top:54px;">
+          <div class="card" style="padding:24px 26px;"><div class="ic">ДАЛЕЕ</div><h3 style="font-size:23px;margin-top:8px;">Личный кабинет абонента</h3></div>
+          <div class="card" style="padding:24px 26px;"><div class="ic">ДАЛЕЕ</div><h3 style="font-size:23px;margin-top:8px;">Real-time чат · Reverb</h3></div>
+          <div class="card" style="padding:24px 26px;"><div class="ic">ДАЛЕЕ</div><h3 style="font-size:23px;margin-top:8px;">FreeRADIUS · PPPoE</h3></div>
+          <div class="card" style="padding:24px 26px;border-color:rgba(255,157,77,.4);"><div class="ic" style="color:var(--amber)">ДАЛЕЕ</div><h3 style="font-size:23px;margin-top:8px;">Платёжные шлюзы · Telegram</h3></div>
+        </div>
+        <div class="reveal d5" style="margin-top:50px;display:flex;gap:54px;align-items:center;">
+          <div><div style="font-family:var(--font-mono);font-size:16px;letter-spacing:.2em;text-transform:uppercase;color:var(--hint)">Автор</div>
+               <div style="font-size:28px;font-weight:600;margin-top:6px;">Очоа Самбрано Х. Ф. · ПО-22б</div></div>
+          <div style="width:1px;align-self:stretch;background:var(--line);"></div>
+          <div><div style="font-family:var(--font-mono);font-size:16px;letter-spacing:.2em;text-transform:uppercase;color:var(--hint)">Руководитель</div>
+               <div style="font-size:28px;font-weight:600;margin-top:6px;">Сизов А. С. · канд. техн. наук</div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===== Хром презентации (вне дизайн-сцены) ===== -->
+<div class="progress" id="progress"></div>
+<div class="hint">← → · пробел · E — правка</div>
+
+<!-- Режим редактирования -->
+<div class="edit-hotzone" id="editHotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Режим правки (E)">✏️</button>
+
+<script>
+/* ===========================================================================
+   КОНТРОЛЛЕР ПРЕЗЕНТАЦИИ
+   - Масштабирование сцены 1920×1080 под окно (letterbox)
+   - Навигация: стрелки / пробел / PageUp-Down / колесо / свайп
+   - Индикатор прогресса и счётчик
+   =========================================================================== */
+class SlidePresentation{
+  constructor(){
+    this.slides=[...document.querySelectorAll('.slide')];
+    this.i=0;
+    this.stage=document.getElementById('deckStage');
+    this.progress=document.getElementById('progress');
+    this.scale();this.keys();this.touch();this.wheel();this.show(0);
+    addEventListener('resize',()=>this.scale());
+  }
+  scale(){
+    const f=Math.min(innerWidth/1920,innerHeight/1080);
+    const x=(innerWidth-1920*f)/2, y=(innerHeight-1080*f)/2;
+    this.stage.style.transform=`translate(${x}px, ${y}px) scale(${f})`;
+  }
+  show(n){
+    this.i=Math.max(0,Math.min(n,this.slides.length-1));
+    this.slides.forEach((s,k)=>{const a=k===this.i;s.classList.toggle('active',a);s.classList.toggle('visible',a);});
+    this.progress.style.width=((this.i+1)/this.slides.length*100)+'%';
+  }
+  next(){this.show(this.i+1);} prev(){this.show(this.i-1);}
+  keys(){
+    addEventListener('keydown',e=>{
+      if(e.target.getAttribute && e.target.getAttribute('contenteditable')==='true') return;
+      if(['ArrowRight','ArrowDown','PageDown',' '].includes(e.key)){e.preventDefault();this.next();}
+      else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();this.prev();}
+      else if(e.key==='Home'){this.show(0);} else if(e.key==='End'){this.show(this.slides.length-1);}
+    });
+  }
+  touch(){
+    let x0=null;
+    addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+    addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;
+      if(Math.abs(dx)>50){dx<0?this.next():this.prev();}x0=null;},{passive:true});
+  }
+  wheel(){
+    let lock=false;
+    addEventListener('wheel',e=>{
+      if(lock)return;if(Math.abs(e.deltaY)<24)return;
+      lock=true;e.deltaY>0?this.next():this.prev();
+      setTimeout(()=>lock=false,650);
+    },{passive:true});
+  }
+}
+const deck=new SlidePresentation();
+
+/* ===========================================================================
+   РЕЖИМ ВСТРОЕННОЙ ПРАВКИ ТЕКСТА
+   Наведите верхний-левый угол или нажмите E. Ctrl+S — выгрузить HTML.
+   =========================================================================== */
+const editor={
+  isActive:false,
+  toggleEditMode(){
+    this.isActive=!this.isActive;
+    const btn=document.getElementById('editToggle');
+    btn.classList.toggle('active',this.isActive);btn.classList.toggle('show',this.isActive);
+    document.querySelectorAll('h1,h2,h3,p,li,span.lbl,.lead,.kicker').forEach(el=>{
+      el.contentEditable=this.isActive;
+    });
+  }
+};
+document.getElementById('editToggle').addEventListener('click',()=>editor.toggleEditMode());
+const hz=document.getElementById('editHotzone'),et=document.getElementById('editToggle');
+let ht=null;
+hz.addEventListener('mouseenter',()=>{clearTimeout(ht);et.classList.add('show');});
+hz.addEventListener('mouseleave',()=>{ht=setTimeout(()=>{if(!editor.isActive)et.classList.remove('show');},400);});
+et.addEventListener('mouseenter',()=>clearTimeout(ht));
+et.addEventListener('mouseleave',()=>{ht=setTimeout(()=>{if(!editor.isActive)et.classList.remove('show');},400);});
+hz.addEventListener('click',()=>editor.toggleEditMode());
+addEventListener('keydown',e=>{
+  if((e.key==='e'||e.key==='E'||e.key==='у'||e.key==='У') && e.target.getAttribute && e.target.getAttribute('contenteditable')!=='true'){editor.toggleEditMode();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();
+    const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+    const b=new Blob([html],{type:'text/html'});const a=document.createElement('a');
+    a.href=URL.createObjectURL(b);a.download='presentacion_defensa.html';a.click();
+  }
+});
+</script>
+</body>
+</html>
